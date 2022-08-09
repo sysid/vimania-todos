@@ -16,7 +16,7 @@ from vimania.vim_.vim_helper import feedkeys
 
 """ Python VIM Interface Wrapper """
 
-_log = logging.getLogger("vimania-plugin.vimania_manager")
+_log = logging.getLogger("vimania-todos.vimania_manager")
 ROOT_DIR = Path(__file__).parent.absolute()
 
 try:
@@ -135,20 +135,6 @@ class VimaniaManager:
         return_message = md.handle(args, False if int(save_twbm) == 0 else True)
         if return_message != "":
             vim.command(f"echom '{return_message}'")
-
-    @staticmethod
-    @err_to_scratch_buffer
-    def edit_vimania(args: str):
-        """Edits text files and jumps to first position of pattern
-        pattern is extracted via separator: '#'
-        """
-        assert isinstance(args, str), f"Error: input must be string, got {type(args)}."
-
-        path, suffix = split_path(args)
-        _log.debug(f"{args=}, {path=}, {suffix=}")
-        vim.command(f"tabnew {path}")
-        if suffix != "":
-            vim.command(f"/{suffix}")
 
     @staticmethod
     @err_to_scratch_buffer

@@ -8,7 +8,7 @@ from vimania.db.dal import DAL, Todo, TodoStatus
 from vimania.environment import config
 from vimania.pattern import TODO_PATTERN, MatchEnum
 
-_log = logging.getLogger("vimania-plugin.todos.handle_buffer")
+_log = logging.getLogger("vimania-todos.todos.handle_buffer")
 ROOT_DIR = Path(__file__).parent.absolute()
 
 

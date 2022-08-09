@@ -10,7 +10,7 @@ from vimania.todos.handle_buffer import VimTodo
 
 """ Implementation independent of vim """
 
-_log = logging.getLogger("vimania-plugin.core")
+_log = logging.getLogger("vimania-todos.core")
 
 
 def create_todo_(args: str, path: str) -> int:

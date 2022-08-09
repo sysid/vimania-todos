@@ -12,7 +12,7 @@ from sqlalchemy.engine import Connection, Engine
 # from twbm.environment import Environment
 from vimania.environment import ROOT_DIR
 
-_log = logging.getLogger("vimania-plugin.dal")
+_log = logging.getLogger("vimania-todos.dal")
 logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)
 
 metadata = sa.MetaData()

@@ -44,12 +44,12 @@ test:  ## run tests
 	TW_VIMANIA_DB_URL=sqlite:///tests/data/vimania_todos_test.db python -m py.test tests -vv
 
 .PHONY: test-vim
-test-vim:  test-vim-vimania  ## run tests-vim
+test-vim:  test-vim-todos  ## run tests-vim
 
-.PHONY: test-vim-vimania
-test-vim-vimania:  ## run tests-vim-vimania
+.PHONY: test-vim-todos
+test-vim-todos:  ## run tests-vim-todos
 	@echo "- > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > "
-	pushd tests; ./run_test.sh test_vimania_vim.vader; popd
+	pushd tests; ./run_test.sh test_todos.vader; popd
 	@echo "- < - < - < - < - < - < - < - < - < - < - < - < - < - < - < - < - < - < - < - < "
 
 .PHONY: coverage
@@ -135,8 +135,9 @@ tag:  ## tag with VERSION
 
 .PHONY: install
 install: _install  ## pipx install
-	./scripts/cp_venv.sh dev
-	cp -a ~/dev/py/pure-sql/src/pure_sql $(app_root)
+	#./scripts/cp_venv.sh dev
+	#cp -a ~/dev/py/pure-sql/src/pure_sql $(app_root)
+	pip install -r pythonx/requirements.txt --target pythonx
 
 .PHONY: _install
 _install: clean-vim uninstall

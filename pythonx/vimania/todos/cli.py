@@ -9,7 +9,7 @@ from vimania.db.dal import DAL, Todo, TodoStatus
 from vimania.environment import config
 from vimania.todos.model import Todos
 
-_log = logging.getLogger("vimania-plugin.todos.cli")
+_log = logging.getLogger("vimania-todos.todos.cli")
 
 if not _log.handlers:  # avoid adding multiple handler via re-sourcing
     handler = logging.StreamHandler(sys.stdout)

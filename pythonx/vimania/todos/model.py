@@ -4,7 +4,7 @@ from typing import Sequence
 from vimania.db.dal import DAL, Todo
 from vimania.environment import config
 
-_log = logging.getLogger("vimania-plugin.todos")
+_log = logging.getLogger("vimania-todos.todos")
 
 
 class Todos:

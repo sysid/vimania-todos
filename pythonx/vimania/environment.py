@@ -5,7 +5,7 @@ from typing import Optional
 
 from pydantic import BaseSettings
 
-_log = logging.getLogger("vimania-plugin.environment")
+_log = logging.getLogger("vimania-todos.environment")
 ROOT_DIR = Path(__file__).parent.absolute()
 
 

@@ -19,7 +19,7 @@ dev() {
 }
 
 prod() {
-  TARGET_DIR="$(find-vimania-plugin)/pythonx"
+  TARGET_DIR="$(find-vimania-todos)/pythonx"
   if [ "$TARGET_DIR" == "/pythonx" ]; then
     echo "-E- Could not find the vimenia plugin path"
     return 1
@@ -40,7 +40,7 @@ prod() {
 #  popd || exit 1
 }
 
-find-vimania-plugin(){
+find-vimania-todos(){
   vim -V2"${temp_file}" -c ':q' --not-a-term > /dev/null
   PLUGIN=$(grep 'plugin/vimania.vim$' "${temp_file}" | grep finished | cut -f 3 -d ' ')
   PLUGIN=${PLUGIN%%plugin/vimania.vim}
