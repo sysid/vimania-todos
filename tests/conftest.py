@@ -40,7 +40,8 @@ def dal(init_db):
     dal = DAL(env_config=config)
     with dal as dal:
         q = pure_sql.get_query_by_name(
-            "load_testdata", str(Path(__file__).parent.absolute() / "sql/load_testdata.sql")
+            "load_testdata",
+            str(Path(__file__).parent.absolute() / "sql/load_testdata.sql"),
         )
         result = dal.conn.execute(q.sql)
         assert result.lastrowid >= 12  # 12 entries in DB expected

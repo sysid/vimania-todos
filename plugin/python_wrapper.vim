@@ -9,7 +9,7 @@ if !has("python3")
 endif
 
 " only load it once
-if exists('g:vimania_loaded')
+if exists('g:vimania_todos_wrapper')
   finish
 endif
 
@@ -88,4 +88,4 @@ endfunction
 command! -nargs=1 VimaniaDeleteTwbm call VimaniaDeleteTwbm(<f-args>)
 "noremap Q :VimaniaDeleteTodo - [ ] todo vimania<CR>
 
-let g:vimania_loaded = 1
+let g:vimania_todos_wrapper = 1

@@ -73,7 +73,9 @@ def parse_uri(uri: URI) -> ParsedPath:
     )
 
 
-def open_uri(target: URI, open_in_vim_extensions: set = None, save_twbm=False) -> Callable:
+def open_uri(
+    target: URI, open_in_vim_extensions: set = None, save_twbm=False
+) -> Callable:
     """
     :returns: a callable that encapsulates the action to perform
     """
@@ -105,10 +107,10 @@ def open_uri(target: URI, open_in_vim_extensions: set = None, save_twbm=False) -
         return OSOpen(target)
 
     if target.startswith("|filename|"):
-        target = target[len("|filename|"):]
+        target = target[len("|filename|") :]
 
     if target.startswith("{filename}"):
-        target = target[len("{filename}"):]
+        target = target[len("{filename}") :]
 
     return VimOpen(target)
 

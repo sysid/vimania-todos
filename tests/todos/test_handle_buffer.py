@@ -11,29 +11,26 @@ from vimania.todos.handle_buffer import VimTodo, Line, handle_it, delete_todo_
 @pytest.mark.parametrize(
     ("text", "result"),
     (
-            ("- [ ] bla bub ()", "-%13% [ ] bla bub ()"),
-
-            # Bug: trailing single quote
-            ("- [ ] bla bub '()'", "-%13% [ ] bla bub '()'"),
-            ("'- [ ] invalid single quote'", "'- [ ] invalid single quote'"),
-
-            ("- [b] xxxx: invalid", "- [b] xxxx: invalid"),
-            ("[ ] xxxx: invalid", "[ ] xxxx: invalid"),
-
-            ("- [ ] todoa ends () hiere.", "-%13% [ ] todoa ends () hiere."),
-            (
-                    "- [x] this is a text describing a task",
-                    "-%13% [x] this is a text describing a task",
-            ),
-            ("-%15% [x] this is a non existing task", ""),
-            (
-                    "- [x] this is a text describing a task %123%",
-                    "-%13% [x] this is a text describing a task %123%",
-            ),
-            ("-%123% [d] should be deleted", ""),
-            ("- [D] should be deleted", ""),
-            ("   - [ ] bla bub ()", "   -%13% [ ] bla bub ()"),
-            ("   - [x] completed task test", "   -%13% [x] completed task test"),
+        ("- [ ] bla bub ()", "-%13% [ ] bla bub ()"),
+        # Bug: trailing single quote
+        ("- [ ] bla bub '()'", "-%13% [ ] bla bub '()'"),
+        ("'- [ ] invalid single quote'", "'- [ ] invalid single quote'"),
+        ("- [b] xxxx: invalid", "- [b] xxxx: invalid"),
+        ("[ ] xxxx: invalid", "[ ] xxxx: invalid"),
+        ("- [ ] todoa ends () hiere.", "-%13% [ ] todoa ends () hiere."),
+        (
+            "- [x] this is a text describing a task",
+            "-%13% [x] this is a text describing a task",
+        ),
+        ("-%15% [x] this is a non existing task", ""),
+        (
+            "- [x] this is a text describing a task %123%",
+            "-%13% [x] this is a text describing a task %123%",
+        ),
+        ("-%123% [d] should be deleted", ""),
+        ("- [D] should be deleted", ""),
+        ("   - [ ] bla bub ()", "   -%13% [ ] bla bub ()"),
+        ("   - [x] completed task test", "   -%13% [x] completed task test"),
     ),
 )
 def test_handle_it(dal, text, result):
@@ -45,9 +42,7 @@ def test_handle_it(dal, text, result):
 
 @pytest.mark.parametrize(
     ("text", "result"),
-    (
-            ("   - [x] completed task test", "   -%13% [x] completed task test"),
-    ),
+    (("   - [x] completed task test", "   -%13% [x] completed task test"),),
 )
 def test_handle_write_and_read(dal, text, result):
     # BUG: Complete flag (4) not set, also tested by vader test
@@ -162,18 +157,18 @@ class TestLine:
     @pytest.mark.parametrize(
         ("todo_text", "result"),
         (
-                (
-                        "-%1% [x] todo 1",
-                        "-%1% [x] todo 1",
-                ),
-                (
-                        "- [x] this is a text describing a task {t:py,todo}",
-                        "-%13% [x] this is a text describing a task {t:py,todo}",
-                ),
-                (
-                        "-%13% [d] this is a text for deletion",
-                        None,
-                ),
+            (
+                "-%1% [x] todo 1",
+                "-%1% [x] todo 1",
+            ),
+            (
+                "- [x] this is a text describing a task {t:py,todo}",
+                "-%13% [x] this is a text describing a task {t:py,todo}",
+            ),
+            (
+                "-%13% [d] this is a text for deletion",
+                None,
+            ),
         ),
     )
     def test_handle(self, dal, todo_text, result):
@@ -203,16 +198,16 @@ class TestLine:
     @pytest.mark.parametrize(
         ("text", "result"),
         (
-                ("- [ ] bla bub ()", "- [ ] bla bub ()"),
-                (
-                        "- [x] this is a text describing a task",
-                        "- [x] this is a text describing a task",
-                ),
-                (
-                        "- [x] this is a text describing a task %123%",
-                        "- [x] this is a text describing a task %123%",
-                ),
-                ("-%9% [ ] with tags {t:todo,py}", "-%9% [ ] with tags {t:todo,py}"),
+            ("- [ ] bla bub ()", "- [ ] bla bub ()"),
+            (
+                "- [x] this is a text describing a task",
+                "- [x] this is a text describing a task",
+            ),
+            (
+                "- [x] this is a text describing a task %123%",
+                "- [x] this is a text describing a task %123%",
+            ),
+            ("-%9% [ ] with tags {t:todo,py}", "-%9% [ ] with tags {t:todo,py}"),
         ),
     )
     def test_parse_vim_todo(self, text, result):

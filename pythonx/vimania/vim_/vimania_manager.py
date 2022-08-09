@@ -114,15 +114,13 @@ class VimaniaManager:
         cursor = (row - 1, col)
         lines = vim.current.buffer
 
-        current_file = vim.eval("expand('%:p')"),
-        target = md.parse_line(
-            cursor, lines
-        )
+        current_file = (vim.eval("expand('%:p')"),)
+        target = md.parse_line(cursor, lines)
         _log.info(f"open {target=} from {current_file=}")
         action = md.open_uri(
             target,
             open_in_vim_extensions=self.extensions,
-            save_twbm=False if int(save_twbm) == 0 else True
+            save_twbm=False if int(save_twbm) == 0 else True,
         )
         action()
 

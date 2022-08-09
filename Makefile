@@ -1,7 +1,6 @@
 .DEFAULT_GOAL := help
 
 MAKE          = make
-PACKAGE		  = vimania
 VERSION       = $(shell cat VERSION)
 
 MAKE    = make
@@ -47,12 +46,6 @@ test:  ## run tests
 .PHONY: test-vim
 test-vim:  test-vim-vimania  ## run tests-vim
 
-#.PHONY: test-vim-textobj
-#test-vim-textobj:  ## run tests-vim-textobj
-#	@echo "- > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > "
-#	pushd tests; ./run_test.sh test_textobj_uri.vader; popd
-#	@echo "- < - < - < - < - < - < - < - < - < - < - < - < - < - < - < - < - < - < - < - < "
-
 .PHONY: test-vim-vimania
 test-vim-vimania:  ## run tests-vim-vimania
 	@echo "- > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > "
@@ -81,7 +74,7 @@ build: clean-vim ## build
 
 .PHONY: copy-buku
 copy-buku:  ## copy-buku: copy buku.py from twbm
-	cp $(HOME)/dev/py/twbm/twbm/buku.py $(HOME)/dev/vim/vimania/pythonx/vimania/buku.py
+	cp $(HOME)/dev/py/twbm/twbm/buku.py $(pkg_src)/buku.py
 
 #.PHONY: build-vim-dev
 #build-vim-dev: _confirm ## copy all python packages into pythonx (for local installation)
@@ -108,7 +101,7 @@ style: isort format  ## perform code style format (black, isort)
 
 .PHONY: format
 format:  ## perform black formatting
-	black --exclude="vimania/buku.py" $(pkg_src) tests
+	black --exclude="buku.py" $(pkg_src) tests
 
 .PHONY: isort
 isort:  ## apply import sort ordering
@@ -143,15 +136,19 @@ tag:  ## tag with VERSION
 .PHONY: install
 install: _install  ## pipx install
 	./scripts/cp_venv.sh dev
-	cp -a ~/dev/py/pure-sql/src/pure_sql ~/dev/vim/vimania/pythonx
+	cp -a ~/dev/py/pure-sql/src/pure_sql $(app_root)
 
 .PHONY: _install
 _install: clean-vim uninstall
-	pipx install $(HOME)/dev/vim/vimania/pythonx
+	pipx install $(app_root)
 
 .PHONY: uninstall
 uninstall:  ## pipx uninstall
-	-pipx uninstall vimania
+	-pipx uninstall vimania-todos
+
+.PHONY: bump-major
+bump-major:  ## bump-major
+	bumpversion --verbose major
 
 .PHONY: bump-minor
 bump-minor:  ## bump-minor
@@ -197,7 +194,7 @@ dev: _confirm clean-vim  ## develop python module, prep accordingly
 
 .PHONY: dev-vim
 dev-vim:  ## open vim plugin
-	vim -c 'OpenSession vimania'
+	vim -c 'OpenSession vimania-todos'
 
 .PHONY: _confirm
 _confirm:
