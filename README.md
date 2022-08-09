@@ -37,7 +37,7 @@ vimania-todos search
 The CLI interface is identical to the [twbm](https://github.com/sysid/twbm.git) interface.
 
 
-### Insert URIs and Todos convenience method:
+### Insert Todos convenience method:
 I recommend configuring two [UltiSnips](https://github.com/SirVer/ultisnips) snippets:
 ```
 snippet todo "todo for Vimania"
