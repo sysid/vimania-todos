@@ -19,13 +19,6 @@ execute 'py3file ' . g:vimania#PythonScript
 "py3file /Users/Q187392/dev/vim/vimania/pythonx/vimania/entrypoint/python_wrapper.py
 "py3file /Users/Q187392/dev/vim/vimania/plugin/python_wrapper.py
 
-
-""""""""""""""": TODO
-"redraw
-
-
-
-
 function! Vimania(args, save_twbm)
   call TwDebug(printf("Vimania args: %s, save_twbm: %s", a:args, a:save_twbm))
   python3 xMgr.call_handle_md(vim.eval('a:args'), vim.eval('a:save_twbm'))
@@ -87,5 +80,12 @@ function! VimaniaDeleteTwbm(args)
 endfunction
 command! -nargs=1 VimaniaDeleteTwbm call VimaniaDeleteTwbm(<f-args>)
 "noremap Q :VimaniaDeleteTodo - [ ] todo vimania<CR>
+
+function! Xxx(args)
+  call TwDebug(printf("Vimania args: %s", a:args))
+  python3 xMgr.xxx(vim.eval('a:args'))
+endfunction
+command! -nargs=1 Xxx call Xxx(<f-args>)
+noremap Q :Xxx doSomething with this<CR>
 
 let g:vimania_todos_wrapper = 1

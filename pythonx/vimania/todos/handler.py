@@ -5,7 +5,6 @@ from typing import Sequence
 
 from vimania.db.dal import DAL, Todo, TodoStatus
 from vimania.environment import config
-from vimania.md.handler import handle
 from vimania.todos.handle_buffer import VimTodo
 
 """ Implementation independent of vim """
@@ -67,8 +66,3 @@ def load_todos_() -> Sequence[str]:
             vtd.set_status(todo.flags)
             vtds.append(vtd)
     return [vtd.vim_line for vtd in vtds]
-
-
-if __name__ == "__main__":
-    arg = "$HOME/dev/vim/vim-textobj-uri/test/vimania//vimania.pdf"
-    handle("my-args-given")

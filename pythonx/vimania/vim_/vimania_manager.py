@@ -6,7 +6,6 @@ from pathlib import Path
 from pprint import pprint
 from typing import Dict, Tuple
 
-from vimania import md
 from vimania.bms.handler import delete_twbm
 from vimania.exception import VimaniaException
 from vimania.todos.handle_buffer import delete_todo_, handle_it
@@ -77,10 +76,10 @@ def warn_to_scratch_buffer(func):
 
 class VimaniaManager:
     def __init__(
-        self,
-        *,
-        extensions=None,
-        plugin_root_dir=None,
+            self,
+            *,
+            extensions=None,
+            plugin_root_dir=None,
     ):
         self.extensions = extensions
         self.plugin_root_dir = plugin_root_dir
@@ -104,37 +103,6 @@ class VimaniaManager:
             # print(vim._get_paths())
             pprint(locals)
         return locals
-
-    @err_to_scratch_buffer
-    @warn_to_scratch_buffer
-    def call_handle_md2(self, save_twbm: str):
-        _log.debug(f"{save_twbm=}")
-
-        row, col = vim.current.window.cursor
-        cursor = (row - 1, col)
-        lines = vim.current.buffer
-
-        current_file = (vim.eval("expand('%:p')"),)
-        target = md.parse_line(cursor, lines)
-        _log.info(f"open {target=} from {current_file=}")
-        action = md.open_uri(
-            target,
-            open_in_vim_extensions=self.extensions,
-            save_twbm=False if int(save_twbm) == 0 else True,
-        )
-        action()
-
-    @staticmethod
-    @err_to_scratch_buffer
-    @warn_to_scratch_buffer
-    def call_handle_md(args: str, save_twbm: str):
-        _log.debug(f"{args=}, {save_twbm=}")
-        assert isinstance(args, str), f"Error: input must be string, got {type(args)}."
-
-        # https://vim.fandom.com/wiki/User_input_from_a_script
-        return_message = md.handle(args, False if int(save_twbm) == 0 else True)
-        if return_message != "":
-            vim.command(f"echom '{return_message}'")
 
     @staticmethod
     @err_to_scratch_buffer
@@ -209,23 +177,8 @@ class VimaniaManager:
         vim.command(f"echom 'deleted: {args} {id_=}'")
 
     @staticmethod
-    # https://github.com/vim/vim/issues/6017: cannot create error buffer
-    # @err_to_scratch_buffer
-    # @warn_to_scratch_buffer
-    def delete_twbm(args: str):
-        _log.debug(f"{args=}")
-        assert isinstance(args, str), f"Error: input must be string, got {type(args)}."
-        try:
-            id_, url = delete_twbm(args)
-        except VimaniaException as e:
-            vim.command(
-                f"echohl WarningMsg | echom 'Cannot extract url from: {args}' | echohl None"
-            )
-            return
-        vim.command(f"echom 'deleted twbm: {url} {id_=}'")
-
-    @staticmethod
     @err_to_scratch_buffer
     def throw_error(args: str, path: str):
         _log.debug(f"{args=}, {path=}")
         raise Exception(f"Exception Test")
+
