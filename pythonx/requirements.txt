@@ -1,0 +1,7 @@
+pure-sql
+beautifulsoup4
+lxml
+pydantic
+requests
+sqlalchemy
+typer
