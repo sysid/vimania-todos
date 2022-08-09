@@ -70,6 +70,7 @@ tox:   ## Run tox
 build: clean-vim ## build
 	@echo "building"
 	#python setup.py sdist
+	cp README.md pythonx/
 	pushd pythonx; python -m build; popd
 
 .PHONY: copy-buku
