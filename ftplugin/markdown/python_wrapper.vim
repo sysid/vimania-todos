@@ -19,20 +19,6 @@ execute 'py3file ' . g:vimania#PythonScript
 "py3file /Users/Q187392/dev/vim/vimania-todos/pythonx/vimania/python_wrapper.py
 "py3file /Users/Q187392/dev/vim/vimania/plugin/python_wrapper.py
 
-function! Vimania(args, save_twbm)
-  call TwDebug(printf("Vimania args: %s, save_twbm: %s", a:args, a:save_twbm))
-  python3 xTodosMgr.call_handle_md(vim.eval('a:args'), vim.eval('a:save_twbm'))
-endfunction
-command! -nargs=* Vimania call Vimania(<f-args>)
-"nnoremap Q :Vimania /Users/Q187392/dev/vim/vimania/tests/data/test.md 0<CR>
-
-function! VimaniaEdit(args)
-  call TwDebug(printf("Vimania args: %s", a:args))
-  python3 xTodosMgr.edit_vimania(vim.eval('a:args'))
-endfunction
-command! -nargs=1 VimaniaEdit call VimaniaEdit(<f-args>)
-"nnoremap Q :VimaniaEdit /Users/Q187392/dev/vim/vimania/tests/data/test.md# Working Examples<CR>
-
 function! VimaniaTodo(args, path)
   call TwDebug(printf("Vimania args: %s, path: %s", a:args, a:path))
   python3 xTodosMgr.create_todo(vim.eval('a:args'), vim.eval('a:path'))
@@ -72,13 +58,6 @@ function! VimaniaDeleteTodo(args, path)
   python3 xTodosMgr.delete_todo(vim.eval('a:args'), vim.eval('a:path'))
 endfunction
 command! -nargs=1 VimaniaDeleteTodo call VimaniaDeleteTodo(<f-args>, expand('%:p'))
-"noremap Q :VimaniaDeleteTodo - [ ] todo vimania<CR>
-
-function! VimaniaDeleteTwbm(args)
-  call TwDebug(printf("Vimania args: %s", a:args))
-  python3 xTodosMgr.delete_twbm(vim.eval('a:args'))
-endfunction
-command! -nargs=1 VimaniaDeleteTwbm call VimaniaDeleteTwbm(<f-args>)
 "noremap Q :VimaniaDeleteTodo - [ ] todo vimania<CR>
 
 function! Xxx(args)

@@ -54,7 +54,7 @@ else:
     extensions = None
 
 xTodosMgr = VimaniaManager(
-    plugin_root_dir = plugin_root_dir,
+    plugin_root_dir=plugin_root_dir,
     extensions=extensions,
 )
 

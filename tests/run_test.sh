@@ -16,12 +16,12 @@ prep-db() {
 
 prep-twbm() {
   echo "-M- Looking for test google entry in twbm to delete if necessary."
-  id=$(TWBM_DB_URL=sqlite://///Users/Q187392/vimwiki/buku/bm.db twbm search --np '"www.google.com"')
+  id=$(TWBM_DB_URL=sqlite://///Users/Q187392/vimwiki/buku/bm.db twbm search -t vimania --np '"www.google.com"')
   if [ ! "$id" == "None" ]; then
-    echo "-M- Deleting test google entry in twbm"
+    Cyan "-M- Deleting test google entry in twbm"
     TWBM_DB_URL=sqlite://///Users/Q187392/vimwiki/buku/bm.db twbm delete "$id"
   else
-    echo "-M- google test entry not found. All good."
+    Green "-M- google test entry not found. All good."
   fi
 }
 
@@ -37,9 +37,9 @@ fi
 # main
 ################################################################################
 prep-db
-prep-twbm
+#prep-twbm
 
-TW_VIMANIA_DB_URL=sqlite:///data/vader.db vim -Nu <(cat << EOF
+TW_VIMANIA_DB_URL=sqlite:///$PROJ_DIR/tests/data/vader.db vim -Nu <(cat << EOF
 filetype off
 set rtp+=~/.vim/plugged/vader.vim
 set rtp+=~/.vim/plugged/vim-misc
@@ -64,4 +64,3 @@ set shortmess+=at
 packadd cfilter
 
 EOF) "+Vader! $1" && Green Success || Red Failure
-
