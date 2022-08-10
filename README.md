@@ -16,25 +16,21 @@
 - Todos are removed from database when removed from markdown file with `dd`
 
 ## Installation
-1. Install `https://github.com/sysid/vimania` with your favourite VIM plugin manager
-2. Install python `requirements.txt` into `<vimplugins>/vimania/pythonx`
-3. Install CLI interface: `make install` (requires pipx)
+- vim needs to be configured with python support
+- `pip` must be in path in order to install required dependencies into `vimania/pythonx` (no pollution of system python).
 
-Example with [Plug](https://github.com/junegunn/vim-plug):
+1. Install `https://github.com/sysid/vimania-todos` with your favourite VIM plugin manager
+2. Install python `requirements.txt` into `<vimplugins>/vimania/pythonx`
+3. Install CLI interface: `pipx vimania-todos`
+
+Using [vim-plug](https://github.com/junegunn/vim-plug):
+
 `Plug 'https://github.com/sysid/vimania-todos.git', {'do': 'pip install -r pythonx/requirements.txt --target pythonx'}`
 
-- vim needs to be configured with python support.
-- `pip` must be found in path
+### Configuration
+Vimenia needs to know, where your Todos database is located:
 
-
-## CLI interface
-- `vimania` provides a CLI interface with full-text search capabilities to your todo database:
-
-```bash
-vimania-todos -h
-vimania-todos search
-```
-The CLI interface is identical to the [twbm](https://github.com/sysid/twbm.git) interface.
+`export TW_VIMANIA_DB_URL="sqlite:///$HOME/todos.db"`
 
 
 ### Insert Todos convenience method:
@@ -45,24 +41,23 @@ snippet todo "todo for Vimania"
 endsnippet
 ```
 
+### Dependencies
+- see [requirements.txt](https://github.com/sysid/vimania-todos/blob/main/pythonx/requirements.txt)
 
-### Dependency
 Optional:
-[twbm](https://github.com/sysid/twbm) for seamless bookmark manager integration
-[UltiSnips](https://github.com/SirVer/ultisnips) for easy uri and todo creation
+- [UltiSnips](https://github.com/SirVer/ultisnips) for easy uri and todo creation
 
 
-### Configuration
-Vimenia needs to know, where your Todos database is located:
-`TW_VIMANIA_DB_URL="sqlite:///$HOME/vimania/todos.db"`
+## CLI interface
+- `vimania` provides a CLI interface with full-text search capabilities to your todo database:
+```bash
+vimania-todos -h
+vimania-todos search
+```
+The CLI interface is identical to the bookmark-manager [twbm](https://github.com/sysid/twbm.git).
 
 
-# Implementation Details
-## Architecture
-![Component](doc/component-vimenia.png)
-
-
-## Todo Management Details
+## Details
 - Todos are recognized via the format: `- [ ] todo`
 - On opening Vimania scans the markdown files and updates existing todos with the current state from the database
 - On saving Vimania scans the markdown and saves new or updated todos to the database
@@ -118,29 +113,32 @@ todo items fo their identifier:
 # Vimania Development
 VIM needs to find vimania dependencies in `pythonx`.
 
-## VIM Interface
+### VIM Interface
 - cannot be tested within PyCharm, needs to be called from VIM.
 - For python changes it is important to restart vim after every change in order to enforce proper reload:
   this is best automated with a Vader script: `run_tests.sh testfile` in tests directory.
 - vimscript changes can be reloaded as usual
 
 
-## Testing
-### Python: pytest
+### Testing
+#### Python: pytest
 `make test`
 
-### VIM: Vader
+#### VIM: Vader
 `make test-vim`
 
-### Smoke Test
+#### Smoke Test
 - after installation with [Plug](https://github.com/junegunn/vim-plug) run vader tests
 
+### Architecture
+![Component](doc/component-vimenia.png)
 
-## Credits
-This is inspired by and recommends to use [UltiSnips](https://github.com/SirVer/ultisnips).
+### Credits
+- It is inspired by and recommends to use [UltiSnips](https://github.com/SirVer/ultisnips).
+- DB management is based on [jarun/buku](https://github.com/jarun/buku)
 
 
-## Changelog
+#### Changelog
 [CHANGELOG.md](https://github.com/sysid/vimania-todos/blob/master/CHANGELOG.md)
 
 <!-- Badges -->
