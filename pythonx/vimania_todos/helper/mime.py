@@ -1,5 +1,5 @@
-from vimania.environment import ROOT_DIR
-from vimania.rifle.rifle import Rifle
+from vimania_todos.environment import ROOT_DIR
+from vimania_todos.rifle.rifle import Rifle
 
 
 def get_mime_type(uri: str) -> str:

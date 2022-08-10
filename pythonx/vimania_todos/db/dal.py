@@ -10,7 +10,7 @@ from sqlalchemy import ForeignKey, create_engine
 from sqlalchemy.engine import Connection, Engine
 
 # from twbm.environment import Environment
-from vimania.environment import ROOT_DIR
+from vimania_todos.environment import ROOT_DIR
 
 _log = logging.getLogger("vimania-todos.dal")
 logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)

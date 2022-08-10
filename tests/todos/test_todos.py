@@ -1,6 +1,6 @@
 import pytest
 
-from vimania.todos.model import (
+from vimania_todos.todos.model import (
     Todos,
     parse_tags,
     check_tags,

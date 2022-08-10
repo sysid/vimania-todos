@@ -8,8 +8,8 @@ import pytest
 from alembic import command
 from alembic.config import Config
 
-from vimania.db.dal import DAL
-from vimania.environment import config, ROOT_DIR
+from vimania_todos.db.dal import DAL
+from vimania_todos.environment import config
 
 _log = logging.getLogger(__name__)
 log_fmt = r"%(asctime)-15s %(levelname)s %(name)s %(funcName)s:%(lineno)d %(message)s"
@@ -24,7 +24,7 @@ def init_db():
         "TW_VIMANIA_DB_URL", "sqlite:///tests/data/vimania_todos_test.db"
     )
     (Path(__file__).parent / "data/vimania_todos_test.db").unlink(missing_ok=True)
-    alembic_root = Path(__file__).parent.parent / "pythonx/vimania/db"
+    alembic_root = Path(__file__).parent.parent / "pythonx/vimania_todos/db"
 
     alembic_cfg = Config(str(alembic_root / "alembic.ini"))
     alembic_cfg.set_main_option("script_location", str(alembic_root / "alembic"))

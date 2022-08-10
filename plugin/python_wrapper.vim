@@ -16,7 +16,7 @@ endif
 let g:vimania#PythonScript = expand('<sfile>:r') . '.py'
 call TwDebug(printf("Vimania PythonScript: %s", g:vimania#PythonScript))
 execute 'py3file ' . g:vimania#PythonScript
-"py3file /Users/Q187392/dev/vim/vimania/pythonx/vimania/entrypoint/python_wrapper.py
+"py3file /Users/Q187392/dev/vim/vimania-todos/pythonx/vimania/python_wrapper.py
 "py3file /Users/Q187392/dev/vim/vimania/plugin/python_wrapper.py
 
 function! Vimania(args, save_twbm)

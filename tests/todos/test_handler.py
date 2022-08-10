@@ -1,6 +1,6 @@
 import pytest
 
-from vimania.todos.handler import (
+from vimania_todos.todos.handler import (
     create_todo_,
     parse_todo_str,
 )

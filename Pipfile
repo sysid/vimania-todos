@@ -9,6 +9,7 @@ typer = "*"
 pydantic = "*"
 requests = "*"
 pure-sql = {editable = true, path = "/Users/Q187392/dev/py/pure-sql"}
+bs4 = "*"
 
 [dev-packages]
 alembic = "*"

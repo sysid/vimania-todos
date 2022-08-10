@@ -6,12 +6,12 @@ from pathlib import Path
 from pprint import pprint
 from typing import Dict, Tuple
 
-from vimania.bms.handler import delete_twbm
-from vimania.exception import VimaniaException
-from vimania.todos.handle_buffer import delete_todo_, handle_it
-from vimania.todos.handler import create_todo_, load_todos_
-from vimania.vim_ import vim_helper
-from vimania.vim_.vim_helper import feedkeys
+from vimania_todos.bms.handler import delete_twbm
+from vimania_todos.exception import VimaniaException
+from vimania_todos.todos.handle_buffer import delete_todo_, handle_it
+from vimania_todos.todos.handler import create_todo_, load_todos_
+from vimania_todos.vim_ import vim_helper
+from vimania_todos.vim_.vim_helper import feedkeys
 
 """ Python VIM Interface Wrapper """
 

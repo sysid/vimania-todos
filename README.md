@@ -24,7 +24,7 @@
 3. Install CLI interface: `make install` (requires pipx)
 
 Example:  
-`Plug 'https://github.com/sysid/vimania.git', {'do': 'pip install -r pythonx/requirements.txt --target pythonx'}`
+`Plug 'https://github.com/sysid/vimania-todos.git', {'do': 'pip install -r pythonx/requirements.txt --target pythonx'}`
 
 
 ## CLI interface

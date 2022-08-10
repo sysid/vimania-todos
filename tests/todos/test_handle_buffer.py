@@ -2,9 +2,9 @@ import textwrap
 
 import pytest
 
-from vimania.db.dal import TodoStatus, DAL
-from vimania.environment import config
-from vimania.todos.handle_buffer import VimTodo, Line, handle_it, delete_todo_
+from vimania_todos.db.dal import TodoStatus, DAL
+from vimania_todos.environment import config
+from vimania_todos.todos.handle_buffer import VimTodo, Line, handle_it, delete_todo_
 
 
 # full integration test

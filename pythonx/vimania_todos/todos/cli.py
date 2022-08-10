@@ -5,9 +5,9 @@ from os import isatty
 from typing import Sequence
 
 import typer
-from vimania.db.dal import DAL, Todo, TodoStatus
-from vimania.environment import config
-from vimania.todos.model import Todos
+from vimania_todos.db.dal import DAL, Todo, TodoStatus
+from vimania_todos.environment import config
+from vimania_todos.todos.model import Todos
 
 _log = logging.getLogger("vimania-todos.todos.cli")
 

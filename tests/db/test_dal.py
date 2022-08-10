@@ -1,7 +1,7 @@
 import pytest
 
-from vimania.db.dal import Todo, DAL, metadata
-from vimania.environment import config
+from vimania_todos.db.dal import Todo, DAL, metadata
+from vimania_todos.environment import config
 
 
 @pytest.fixture()

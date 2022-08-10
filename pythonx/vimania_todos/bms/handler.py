@@ -1,10 +1,10 @@
 import logging
 from typing import Tuple
 
-from vimania.buku import BukuDb
-from vimania.environment import config
-from vimania.exception import VimaniaException
-from vimania.pattern import URL_PATTERN
+from vimania_todos.buku import BukuDb
+from vimania_todos.environment import config
+from vimania_todos.exception import VimaniaException
+from vimania_todos.pattern import URL_PATTERN
 
 _log = logging.getLogger("vimania-todos.bms")
 

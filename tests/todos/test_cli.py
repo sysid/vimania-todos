@@ -1,7 +1,7 @@
 import pytest
 from typer.testing import CliRunner
 
-from vimania.todos.cli import app
+from vimania_todos.todos.cli import app
 
 runner = CliRunner()
 

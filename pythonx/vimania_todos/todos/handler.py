@@ -3,9 +3,9 @@ import re
 from datetime import datetime
 from typing import Sequence
 
-from vimania.db.dal import DAL, Todo, TodoStatus
-from vimania.environment import config
-from vimania.todos.handle_buffer import VimTodo
+from vimania_todos.db.dal import DAL, Todo, TodoStatus
+from vimania_todos.environment import config
+from vimania_todos.todos.handle_buffer import VimTodo
 
 """ Implementation independent of vim """
 
