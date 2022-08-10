@@ -6,7 +6,7 @@ source ~/dev/binx/profile/sane_fn.sh
 
 prep-db() {
   echo "-M- Creating vader DB: $(pwd)"
-  twpushd "$PROJ_DIR/pythonx/vimania/db"
+  twpushd "$PROJ_DIR/pythonx/vimania_todos/db"
   [[ -f todos.db  ]] && rm -v todos.db
   alembic upgrade head
   readlink -f todos.db
