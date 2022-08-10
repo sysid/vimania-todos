@@ -7,16 +7,15 @@
 > modern markdown todo list management in VIM
 
 ## Key features:
-- Centralized todo list management with embedded database, keep your todo items within the context/file where they
-  belong but have a centralized view on it
+- todo list management with embedded database, keep your todo items within the context/file where they
+  belong, but have a centralized view on it
 - no more missing, obsolete or duplicated todos
 - Synchronization of todo status between Markdown files and database
 - todo lists within code fences in markdown are ignored
-- DB entry has a link to the task's source file, so by looking in the DB any todo can be located.
+- DB entry has a link to the task's source file, so by looking in the DB any Todo can be located.
 - Todos are removed from database when removed from markdown file with `dd`
 
 ## Installation
-
 1. Install `https://github.com/sysid/vimania` with your favourite VIM plugin manager
 2. Install python `requirements.txt` into `<vimplugins>/vimania/pythonx`
 3. Install CLI interface: `make install` (requires pipx)

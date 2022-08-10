@@ -7,24 +7,24 @@
 > modern markdown todo list management in VIM
 
 ## Key features:
-- Centralized todo list management with embedded database, keep your todo items within the context/file where they
-  belong but have a centralized view on it
+- todo list management with embedded database, keep your todo items within the context/file where they
+  belong, but have a centralized view on it
 - no more missing, obsolete or duplicated todos
 - Synchronization of todo status between Markdown files and database
 - todo lists within code fences in markdown are ignored
-- DB entry has a link to the task's source file, so by looking in the DB any todo can be located.
+- DB entry has a link to the task's source file, so by looking in the DB any Todo can be located.
 - Todos are removed from database when removed from markdown file with `dd`
 
 ## Installation
-- vim needs to be configured with python support.
-- `pip` must be in path in order to install required dependencies into `vimania/pythonx` (no pollution of system python).
-
 1. Install `https://github.com/sysid/vimania` with your favourite VIM plugin manager
 2. Install python `requirements.txt` into `<vimplugins>/vimania/pythonx`
 3. Install CLI interface: `make install` (requires pipx)
 
-Example:  
-`Plug 'https://github.com/sysid/vimania.git', {'do': 'pip install -r pythonx/requirements.txt --target pythonx'}`
+Example with [Plug](https://github.com/junegunn/vim-plug):
+`Plug 'https://github.com/sysid/vimania-todos.git', {'do': 'pip install -r pythonx/requirements.txt --target pythonx'}`
+
+- vim needs to be configured with python support.
+- `pip` must be found in path
 
 
 ## CLI interface
@@ -115,35 +115,39 @@ todo items fo their identifier:
       re-init: `sed -i 's/-%[0-9]\+%/-/' todo.md`
 
 
-# Development
+# Vimania Development
 VIM needs to find vimania dependencies in `pythonx`.
-However, try to avoid bringing up PyCharm because it tries to index the entire dependency tree.
 
-## VimaniaManager (VIM Interface)
+## VIM Interface
 - cannot be tested within PyCharm, needs to be called from VIM.
-
-## Testing
-`make test`
-`make test-vim`
-
-### VIM bridge
 - For python changes it is important to restart vim after every change in order to enforce proper reload:
   this is best automated with a Vader script: `run_tests.sh testfile` in tests directory.
 - vimscript changes can be reloaded as usual
 
 
+## Testing
+### Python: pytest
+`make test`
+
+### VIM: Vader
+`make test-vim`
+
+### Smoke Test
+- after installation with [Plug](https://github.com/junegunn/vim-plug) run vader tests
+
+
 ## Credits
-It is inspired by and recommends to use [UltiSnips](https://github.com/SirVer/ultisnips).
+This is inspired by and recommends to use [UltiSnips](https://github.com/SirVer/ultisnips).
 
 
 ## Changelog
-[CHANGELOG.md](https://github.com/sysid/vimania/blob/master/CHANGELOG.md)
+[CHANGELOG.md](https://github.com/sysid/vimania-todos/blob/master/CHANGELOG.md)
 
 <!-- Badges -->
 
-[pypi-image]: https://badge.fury.io/py/vimania.svg
-[pypi-url]: https://pypi.org/project/vimania/
-[build-image]: https://github.com/sysid/vimania/actions/workflows/build.yml/badge.svg
-[build-url]: https://github.com/sysid/vimania/actions/workflows/build.yml
-[coverage-image]: https://codecov.io/gh/sysid/vimania/branch/master/graph/badge.svg
-[coverage-url]: https://codecov.io/gh/sysid/vimania
+[pypi-image]: https://badge.fury.io/py/vimania-todos.svg
+[pypi-url]: https://pypi.org/project/vimania-todos/
+[build-image]: https://github.com/sysid/vimania-todos/actions/workflows/build.yml/badge.svg
+[build-url]: https://github.com/sysid/vimania-todos/actions/workflows/build.yml
+[coverage-image]: https://codecov.io/gh/sysid/vimania-todos/branch/master/graph/badge.svg
+[coverage-url]: https://codecov.io/gh/sysid/vimania-todos
