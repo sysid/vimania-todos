@@ -66,6 +66,11 @@ coverage:  ## Run tests with coverage
 tox:   ## Run tox
 	tox
 
+.PHONY: clean-vim
+clean-vim:  ## clean pythonx directory for PyCharm development
+	@echo "Removing python packages from pythonx"
+	@pushd pythonx; git clean -d -x -f; popd
+
 .PHONY: build
 build: clean-vim ## build
 	@echo "building"
@@ -181,11 +186,6 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
-
-.PHONY: clean-vim
-clean-vim:  ## clean pythonx directory for PyCharm development
-	@echo "Removing python packages from pythonx"
-	@pushd pythonx; git clean -d -x -f; popd
 
 ################################################################################
 # Misc

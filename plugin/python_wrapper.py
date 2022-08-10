@@ -53,7 +53,7 @@ if int(vim.eval("exists('g:vimania#Extensions')")):
 else:
     extensions = None
 
-xMgr = VimaniaManager(
+xTodosMgr = VimaniaManager(
     plugin_root_dir = plugin_root_dir,
     extensions=extensions,
 )
