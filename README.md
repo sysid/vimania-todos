@@ -1,8 +1,6 @@
 # Vimania: Todo list management in VIM
 
 [![PyPI Version][pypi-image]][pypi-url]
-[![Build Status][build-image]][build-url]
-[![Code Coverage][coverage-image]][coverage-url]
 
 > modern markdown todo list management in VIM
 
