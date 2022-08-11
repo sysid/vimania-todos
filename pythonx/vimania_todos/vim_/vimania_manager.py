@@ -78,12 +78,10 @@ class VimaniaManager:
     def __init__(
             self,
             *,
-            extensions=None,
             plugin_root_dir=None,
     ):
-        self.extensions = extensions
         self.plugin_root_dir = plugin_root_dir
-        _log.debug(f"{extensions=}, {plugin_root_dir=}")
+        _log.debug(f"{plugin_root_dir=}")
 
     def __repr__(self):
         return "{self.__class__.__name__}"  # subclassing!

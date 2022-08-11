@@ -47,15 +47,8 @@ if LOG_LEVEL == logging.DEBUG:
     print(f"{sys.prefix=}")
     print(f"{sys.executable=}")
 
-if int(vim.eval("exists('g:vimania#Extensions')")):
-    extensions = vim.eval('g:vimania#Extensions')
-    extensions = [ext.strip() for ext in extensions.split(',')]
-else:
-    extensions = None
-
 xTodosMgr = VimaniaManager(
     plugin_root_dir=plugin_root_dir,
-    extensions=extensions,
 )
 
 _log.debug("------------------------------ End Python Init -------------------------------")
