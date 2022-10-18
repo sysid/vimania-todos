@@ -3,7 +3,7 @@
 
 [![PyPI Version][pypi-image]][pypi-url]
 
-> Store todos from all your markdown files in a SQLITE FTS database for centralized management.
+> Store todos from your markdown files in a SQLITE FTS database for centralized management.
 
 ## Key features:
 - todo list management with embedded database, keep your todo items within the context/file where they

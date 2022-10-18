@@ -152,3 +152,5 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 pythonx/vimania/db/todos.db
+.envrc
+.envrc
