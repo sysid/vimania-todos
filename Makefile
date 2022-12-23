@@ -46,7 +46,7 @@ test:  ## run tests
 	TW_VIMANIA_DB_URL=sqlite:///tests/data/vimania_todos_test.db python -m pytest -ra --junitxml=report.xml --cov-config=setup.cfg --cov-report=xml --cov-report term --cov=$(pkg_src) -vv tests/
 
 .PHONY: test-vim
-test-vim:  test-vim-todos  ## run tests-vim
+test-vim:  test-vim-todos  ## run tests-vim (requires libs in pythonx: make build-vim)
 
 .PHONY: test-vim-todos
 test-vim-todos:  ## run tests-vim-todos

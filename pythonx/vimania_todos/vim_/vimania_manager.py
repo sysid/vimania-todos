@@ -6,7 +6,6 @@ from pathlib import Path
 from pprint import pprint
 from typing import Dict, Tuple
 
-from vimania_todos.bms.handler import delete_twbm
 from vimania_todos.exception import VimaniaException
 from vimania_todos.todos.handle_buffer import delete_todo_, handle_it
 from vimania_todos.todos.handler import create_todo_, load_todos_

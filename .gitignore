@@ -7,6 +7,7 @@ tests/data/vimania_todos_test.db
 tests/data/vader.db
 pythonx/vimania_todos/db/vimania.db
 
+report.xml
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 

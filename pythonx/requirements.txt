@@ -3,4 +3,3 @@ pydantic
 requests
 sqlalchemy
 typer
-bs4

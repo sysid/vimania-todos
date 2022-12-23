@@ -7,9 +7,9 @@ import re
 # pattern = re.compile(r""".*vm::(.*)\)+""")
 from enum import IntEnum
 
-URL_PATTERN = re.compile(
-    r""".*(https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b[-a-zA-Z0-9@:%_\+.~#?&\/=]*)"""
-)
+# URL_PATTERN = re.compile(
+#     r""".*(https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}\b[-a-zA-Z0-9@:%_\+.~#?&\/=]*)"""
+# )
 
 ################################################################################
 # TODO_PATTERN

@@ -6,7 +6,7 @@ from typing import List, Match, Optional
 from pydantic import BaseModel
 from vimania_todos.db.dal import DAL, Todo, TodoStatus
 from vimania_todos.environment import config
-from vimania_todos.pattern import TODO_PATTERN, MatchEnum
+from vimania_todos.todos.pattern import TODO_PATTERN, MatchEnum
 
 _log = logging.getLogger("vimania-todos.todos.handle_buffer")
 ROOT_DIR = Path(__file__).parent.absolute()
