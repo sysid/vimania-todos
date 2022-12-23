@@ -1,0 +1,26 @@
+{
+  "template": "https://github.com/sysid/py-template",
+  "commit": "f24aced933306f4f07b67b669143b468bfc677ee",
+  "context": {
+    "cookiecutter": {
+      "package_display_name": "vimania-todos",
+      "package_name": "vimania_todos",
+      "project_name": "vimania_todos",
+      "repo_name": "vimania_todos",
+      "github_repo_name": "vimania_todos",
+      "github_name": "vimania_todos",
+      "package_short_description": "Modern todo-list management in VIM",
+      "version": "1.2.1",
+      "full_name": "sysid",
+      "email": "sysid@gmx.de",
+      "github_user_name": "sysid",
+      "license": "MIT license",
+      "year": "2022",
+      "_extensions": [
+        "jinja2_time.TimeExtension"
+      ],
+      "_template": "https://github.com/sysid/py-template"
+    }
+  },
+  "directory": null
+}
