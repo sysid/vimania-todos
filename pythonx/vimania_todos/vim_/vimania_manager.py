@@ -76,9 +76,9 @@ def warn_to_scratch_buffer(func):
 
 class VimaniaManager:
     def __init__(
-            self,
-            *,
-            plugin_root_dir=None,
+        self,
+        *,
+        plugin_root_dir=None,
     ):
         self.plugin_root_dir = plugin_root_dir
         _log.debug(f"{plugin_root_dir=}")
@@ -179,4 +179,3 @@ class VimaniaManager:
     def throw_error(args: str, path: str):
         _log.debug(f"{args=}, {path=}")
         raise Exception(f"Exception Test")
-

@@ -12,9 +12,9 @@ PIP		= venv/bin/pip
 
 VIM_PLUG="$(HOME)/dev/vim/tw-vim/config/plugins.vim"
 
-app_root = $(PROJ_DIR)/pythonx
+app_root = $(PROJ_DIR)
 app_root ?= .
-pkg_src =  $(app_root)/vimania_todos
+pkg_src =  $(app_root)/pythonx/vimania_todos
 tests_src = $(app_root)/tests
 
 define PRINT_HELP_PYSCRIPT
@@ -43,7 +43,7 @@ all: clean build upload tag  ## Build and upload
 ################################################################################
 .PHONY: test
 test:  ## run tests
-	TW_VIMANIA_DB_URL=sqlite:///tests/data/vimania_todos_test.db python -m pytest -ra --junitxml=report.xml --cov-config=pythonx/setup.cfg --cov-report=xml --cov-report term --cov=$(pkg_src) -vv tests/
+	TW_VIMANIA_DB_URL=sqlite:///tests/data/vimania_todos_test.db python -m pytest -ra --junitxml=report.xml --cov-config=setup.cfg --cov-report=xml --cov-report term --cov=$(pkg_src) -vv tests/
 
 .PHONY: test-vim
 test-vim:  test-vim-todos  ## run tests-vim
@@ -76,11 +76,11 @@ copy-buku:  ## copy-buku: copy buku.py from twbm
 	cp $(HOME)/dev/py/twbm/twbm/buku.py $(pkg_src)/buku.py
 
 .PHONY: build
-build: clean-vim ## build
+build: clean clean-vim ## build
 	@echo "building"
 	#python setup.py sdist
 	cp README.md pythonx/
-	pushd pythonx; python -m build; popd
+	python -m build
 
 #.PHONY: build-vim-dev
 #build-vim-dev: _confirm ## copy all python packages into pythonx (for local installation)
@@ -129,7 +129,7 @@ uninstall:  ## pipx uninstall
 .PHONY: upload
 upload:  ## upload to PyPi
 	@echo "upload"
-	twine upload --verbose pythonx/dist/*
+	twine upload --verbose dist/*
 
 .PHONY: tag
 tag:  ## tag with VERSION
@@ -184,9 +184,9 @@ clean: clean-build clean-pyc  ## remove all build, test, coverage and Python art
 
 .PHONY: clean-build
 clean-build: ## remove build artifacts
-	rm -fr pythonx/build/
-	rm -fr pythonx/dist/
-	rm -fr pythonx/.eggs/
+	rm -fr build/
+	rm -fr dist/
+	rm -fr .eggs/
 	find . \( -path ./env -o -path ./venv -o -path ./.env -o -path ./.venv \) -prune -o -name '*.egg-info' -exec rm -fr {} +
 	find . \( -path ./env -o -path ./venv -o -path ./.env -o -path ./.venv \) -prune -o -name '*.egg' -exec rm -f {} +
 

@@ -1,8 +1,9 @@
-# Vimania: Todo list management in VIM
+# vimania-todos
+# Modern todo-list management in VIM
 
 [![PyPI Version][pypi-image]][pypi-url]
 
-> modern markdown todo list management in VIM
+> Store todos from your markdown files in a SQLITE FTS database for centralized management.
 
 ## Key features:
 - todo list management with embedded database, keep your todo items within the context/file where they
@@ -15,21 +16,29 @@
 
 ## Installation
 - vim needs to be configured with python support
-- `pip` must be in path in order to install required dependencies into `vimania/pythonx` (no pollution of system python).
+- `pip` must be in path
+- `sqlite` version > 3.9.0 for full text search support (FTS5)
 
 1. Install `https://github.com/sysid/vimania-todos` with your favourite VIM plugin manager
-2. Install python `requirements.txt` into `<vimplugins>/vimania/pythonx`
+2. Install python `requirements.txt` into `<vimplugins>/vimania-todos/pythonx`
 3. Install CLI interface: `pipx vimania-todos`
 
+### Configuration
 Using [vim-plug](https://github.com/junegunn/vim-plug):
+```vim
+Plug 'https://github.com/sysid/vimania-todos.git', {'do': 'pip install -r pythonx/requirements.txt --target pythonx'}
+```
 
-`Plug 'https://github.com/sysid/vimania-todos.git', {'do': 'pip install -r pythonx/requirements.txt --target pythonx'}`
+Tested configuration:
+- sqlite 3.36.0 (requires update on macOS)
+- macOS, Ubuntu
 
 ### Configuration
-Vimenia needs to know, where your Todos database is located:
-
-`export TW_VIMANIA_DB_URL="sqlite:///$HOME/todos.db"`
-
+`vimenia-todos` needs to know, where your Todos database is located:
+```bash
+# Default: <vimplugins>/vimania-todos/pythonx/vimania_todos/db/todos.db
+export TW_VIMANIA_DB_URL="sqlite:///$HOME/todos.db"
+```
 
 ### Insert Todos convenience method:
 I recommend configuring two [UltiSnips](https://github.com/SirVer/ultisnips) snippets:
