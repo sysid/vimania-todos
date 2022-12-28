@@ -33,7 +33,7 @@ help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 .PHONY: all
-all: clean build upload tag  ## Build and upload
+all: clean build upload  ## Build and upload
 	@echo "--------------------------------------------------------------------------------"
 	@echo "-M- building and distributing"
 	@echo "--------------------------------------------------------------------------------"
@@ -131,24 +131,21 @@ upload:  ## upload to PyPi
 	@echo "upload"
 	twine upload --verbose dist/*
 
-.PHONY: tag
-tag:  ## tag with VERSION
-	@echo "tagging $(VERSION)"
-	git tag -a $(VERSION) -m "version $(VERSION)"
+.PHONY: bump-major
+bump-major:  ## bump-major, tag and push
+	bumpversion --commit --tag major
 	git push --tags
 
-.PHONY: bump-major
-bump-major:  ## bump-major
-	bumpversion --verbose major
-
 .PHONY: bump-minor
-bump-minor:  ## bump-minor
-	bumpversion --verbose minor
+bump-minor:  ## bump-minor, tag and push
+	bumpversion --commit --tag minor
+	git push --tags
 
 .PHONY: bump-patch
-bump-patch:  ## bump-patch
-	#bumpversion --dry-run --allow-dirty --verbose patch
-	bumpversion --verbose patch
+bump-patch:  ## bump-patch, tag and push
+	bumpversion --commit --tag patch
+	git push --tags
+	#git push  # triggers additional build, but no code change (for bumping workspace must be clean)
 
 ################################################################################
 # Code Quality
