@@ -3,97 +3,81 @@
 
 [![PyPI Version][pypi-image]][pypi-url]
 
-> Store todos from your markdown files in a SQLITE FTS database for centralized management.
+> Manage todos from your markdown files in a SQLITE FTS database.
 
 ## Key features:
-- todo list management with embedded database, keep your todo items within the context/file where they
+- todo list management in database, keep your todo items in the context/file where they
   belong, but have a centralized view on it
 - no more missing, obsolete or duplicated todos
-- Synchronization of todo status between Markdown files and database
+- sync between Markdown files and database
 - todo lists within code fences in markdown are ignored
-- DB entry has a link to the task's source file, so by looking in the DB any Todo can be located.
-- Todos are removed from database when removed from markdown file with `dd`
+- DB entry has a back-link to the task's source file, so the associated source file can be identified
+- todos are removed from database when removed from markdown file with `dd`
 
+#### Example todo file
+After saving the file, the identifiers have been added and the items are saved in DB:
+```markdown
+-%1% [ ] purchase piano -%2% [ ] [AIMMS book](file:~/dev/pyomo/tutorial/AIMMS_modeling.pdf)
+-%7% [ ] list repos ahead/behind remote
+```
 ## Installation
-- vim needs to be configured with python support
-- `pip` must be in path
-- `sqlite` version > 3.9.0 for full text search support (FTS5)
-
-1. Install `https://github.com/sysid/vimania-todos` with your favourite VIM plugin manager
-2. Install python `requirements.txt` into `<vimplugins>/vimania-todos/pythonx`
-3. Install CLI interface: `pipx vimania-todos`
-
-### Configuration
-Using [vim-plug](https://github.com/junegunn/vim-plug):
+1. Using [vim-plug](https://github.com/junegunn/vim-plug):
 ```vim
 Plug 'https://github.com/sysid/vimania-todos.git', {'do': 'pip install -r pythonx/requirements.txt --target pythonx'}
 ```
+3. Install CLI interface: `pipx vimania-todos`
 
-Tested configuration:
+#### Tested configuration:
 - sqlite 3.36.0 (requires update on macOS)
 - macOS, Ubuntu
+- vim needs to be configured with python support
+- `pip` must be in path
+- dependencies see [requirements.txt](https://github.com/sysid/vimania-todos/blob/main/pythonx/requirements.txt)
+- `sqlite` version > 3.9.0 for full text search support (FTS5)
 
-### Configuration
-`vimenia-todos` needs to know, where your Todos database is located:
+#### Configuration
 ```bash
 # Default: <vimplugins>/vimania-todos/pythonx/vimania_todos/db/todos.db
 export TW_VIMANIA_DB_URL="sqlite:///$HOME/todos.db"
 ```
 
-### Insert Todos convenience method:
-I recommend configuring two [UltiSnips](https://github.com/SirVer/ultisnips) snippets:
+#### Insert Todos convenience method:
+[UltiSnips](https://github.com/SirVer/ultisnips) snippet:
 ```
 snippet todo "todo for Vimania"
 - [ ] ${1:todo}
 endsnippet
 ```
 
-### Dependencies
-- see [requirements.txt](https://github.com/sysid/vimania-todos/blob/main/pythonx/requirements.txt)
-
-Optional:
-- [UltiSnips](https://github.com/SirVer/ultisnips) for easy uri and todo creation
-
-
 ## CLI interface
 - `vimania` provides a CLI interface with full-text search capabilities to your todo database:
 ```bash
-vimania-todos -h
+vimania-todos --help
 vimania-todos search
 ```
-The CLI interface is identical to the bookmark-manager [twbm](https://github.com/sysid/twbm.git).
+The CLI interface is identical to [twbm](https://github.com/sysid/twbm.git).
 
 
-## Details
+## Implementation Details
 - Todos are recognized via the format: `- [ ] todo`
-- On opening Vimania scans the markdown files and updates existing todos with the current state from the database
-- On saving Vimania scans the markdown and saves new or updated todos to the database
-- Vimania inserts a DB identifier ('%99%') into the markdown item in order to establish a durable link between DB and
+- On opening vimania-todo scans the markdown files and updates existing todos with the current state from the database
+- On saving vimania-todo scans the markdown and saves new or updated todos to the database
+- Vimania-todo inserts a DB identifier ('%99%') into the markdown item in order to establish a durable link between DB and
   markdown item
 - The identifier is hidden via VIM's `conceal` feature
-- todo items are deleted by deleting (`dd`) in normal mode. This triggers a DB update
+- todo items are deleted by deleting (`dd`) in normal mode. This triggers a DB update.
 - todo items deleted by `dd` in visual mode are NOT delete from DB. This is useful to move tasks from one file to
   another. Otherwise, you always can move an item by just deleting it in one file and paste in to another file AND then
-  remove the database id ('%99%'). So Vimania kust creates a new entry/link.
-
-### Example todo file
-After saving the file, the identifiers have been added and the items are saved in DB:
-
-```markdown
--%1% [ ] purchase piano -%2% [ ] [AIMMS book](file:~/dev/pyomo/tutorial/AIMMS_modeling.pdf)
--%7% [ ] list repos ahead/behind remote
-```
+  remove the database id ('%99%'). So vimania-todo creates a new entry/link.
 
 ## Caveat
-- Deleting markdown todo items outside Vimenia will cause inconsistency between the DB and the markdown state.
+- Deleting markdown todo items outside VIM-will cause inconsistency between the DB and the markdown state.
 - Always use `dd` to delete a markdown item in order to trigger the corresponding DB update
 - Never change the identifier '%99%' manually.
 - Todo items are always synced from the DB when opening a markdown file, so changes not written back to DB will be
   lost.
 
-Markdown content other than todo items can be changed arbitrarily, of course.
-
-### Fixing inconsistent state
+## Fixing inconsistent state
 Todos in markdown can get out of sync if updates are made outside of vim, e.g. with another text editor. Don't worry,
 this can be fixed easily.
 
@@ -117,7 +101,7 @@ todo items fo their identifier:
       re-init: `sed -i 's/-%[0-9]\+%/-/' todo.md`
 
 
-# Vimania Development
+# Development
 VIM needs to find vimania dependencies in `pythonx`.
 
 ### VIM Interface
