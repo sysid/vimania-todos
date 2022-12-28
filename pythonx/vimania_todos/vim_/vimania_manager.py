@@ -7,6 +7,7 @@ from pprint import pprint
 from typing import Dict, Tuple
 
 from vimania_todos.exception import VimaniaException
+from vimania_todos.helper.helper import sanitize
 from vimania_todos.todos.handle_buffer import delete_todo_, handle_it
 from vimania_todos.todos.handler import create_todo_, load_todos_
 from vimania_todos.vim_ import vim_helper
@@ -109,7 +110,7 @@ class VimaniaManager:
         assert isinstance(args, str), f"Error: input must be string, got {type(args)}."
         assert isinstance(path, str), f"Error: input must be string, got {type(path)}."
         id_ = create_todo_(args, path)
-        vim.command(f"echom 'created/updated: {args} {id_=}'")
+        vim.command(f"echom 'created/updated: {sanitize(args)} {id_=}'")
 
     @staticmethod
     @err_to_scratch_buffer
@@ -171,7 +172,8 @@ class VimaniaManager:
         assert isinstance(args, str), f"Error: input must be string, got {type(args)}."
         # id_ = create_todo_(args, path)
         id_ = delete_todo_(args, path)
-        vim.command(f"echom 'deleted: {args} {id_=}'")
+        _log.debug(f"deleted: {args=} {id_=}")
+        vim.command(f"echom 'deleted: {sanitize(args)} {id_=}'")
 
     @staticmethod
     @err_to_scratch_buffer
