@@ -17,21 +17,6 @@ app_root ?= .
 pkg_src =  $(app_root)/pythonx/vimania_todos
 tests_src = $(app_root)/tests
 
-define PRINT_HELP_PYSCRIPT
-import re, sys
-
-for line in sys.stdin:
-	match = re.match(r'^([a-zA-Z0-9_-]+):.*?## (.*)$$', line)
-	if match:
-		target, help = match.groups()
-		print("\033[36m%-20s\033[0m %s" % (target, help))
-endef
-export PRINT_HELP_PYSCRIPT
-
-.PHONY: help
-help:
-	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
-
 .PHONY: all
 all: clean build upload  ## Build and upload
 	@echo "--------------------------------------------------------------------------------"
@@ -39,8 +24,21 @@ all: clean build upload  ## Build and upload
 	@echo "--------------------------------------------------------------------------------"
 
 ################################################################################
-# Testing
+# Development \
+DEVELOPMENT:  ## ############################################################
+
+.PHONY: dev
+dev: _confirm clean-vim  ## develop python module, prep accordingly
+	charm .
+
+.PHONY: dev-vim
+dev-vim:  ## open vim plugin
+	vim -c 'OpenSession vimania-todos'
+
 ################################################################################
+# Testing \
+TESTING:  ## ############################################################
+
 .PHONY: test
 test:  ## run tests
 	TW_VIMANIA_DB_URL=sqlite:///tests/data/vimania_todos_test.db python -m pytest -ra --junitxml=report.xml --cov-config=setup.cfg --cov-report=xml --cov-report term --cov=$(pkg_src) -vv tests/
@@ -69,8 +67,9 @@ tox:   ## Run tox
 	tox
 
 ################################################################################
-# Building
-################################################################################
+# Building, Deploying \
+BUILDING:  ## ##################################################################
+
 .PHONY: copy-buku
 copy-buku:  ## copy-buku: copy buku.py from twbm
 	cp $(HOME)/dev/py/twbm/twbm/buku.py $(pkg_src)/buku.py
@@ -122,10 +121,6 @@ install: uninstall
 uninstall:  ## pipx uninstall
 	-pipx uninstall vimania-todos
 
-
-################################################################################
-# Version, Uploading
-################################################################################
 .PHONY: upload
 upload:  ## upload to PyPi
 	@echo "upload"
@@ -148,8 +143,9 @@ bump-patch:  ## bump-patch, tag and push
 	#git push  # triggers additional build, but no code change (for bumping workspace must be clean)
 
 ################################################################################
-# Code Quality
-################################################################################
+# Code Quality \
+QUALITY:  ## ############################################################
+
 .PHONY: style
 style: isort format  ## perform code style format (black, isort)
 
@@ -174,8 +170,27 @@ mypy:  ## check type hint annotations
 	mypy --config-file setup.cfg $(pkg_src)
 
 ################################################################################
-# Clean
+# Documenation \
+DOCU:  ## ############################################################
+
+.PHONY: docs
+docs: coverage  ## - generate project documentation
+	@cd docs; rm -rf source/api/confguard*.rst source/api/modules.rst build/*
+	@cd docs; make html
+
+.PHONY: check-docs
+check-docs:  ## - quick check docs consistency
+	@cd docs; make dummy
+
+.PHONY: serve-docs
+serve-docs:  ## - serve project html documentation
+	@cd docs/build; python -m http.server --bind 127.0.0.1
+
+
 ################################################################################
+# Clean \
+CLEAN:  ## ############################################################
+
 .PHONY: clean
 clean: clean-build clean-pyc  ## remove all build, test, coverage and Python artifacts
 
@@ -195,15 +210,22 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '__pycache__' -exec rm -fr {} +
 
 ################################################################################
-# Misc
-################################################################################
-.PHONY: dev
-dev: _confirm clean-vim  ## develop python module, prep accordingly
-	pycharm .
+# Misc \
+MISC:  ## #####################################################################
+define PRINT_HELP_PYSCRIPT
+import re, sys
 
-.PHONY: dev-vim
-dev-vim:  ## open vim plugin
-	vim -c 'OpenSession vimania-todos'
+for line in sys.stdin:
+	match = re.match(r'^([a-zA-Z0-9_-]+):.*?## (.*)$$', line)
+	if match:
+		target, help = match.groups()
+		print("\033[36m%-20s\033[0m %s" % (target, help))
+endef
+export PRINT_HELP_PYSCRIPT
+
+.PHONY: help
+help:
+	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 .PHONY: _confirm
 _confirm:
