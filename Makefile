@@ -29,8 +29,9 @@ DEVELOPMENT:  ## ############################################################
 
 .PHONY: rsbuild
 rsbuild:  ## rsbuild
-	maturin build
-	pip install --force-reinstall /Users/Q187392/dev/s/public/vimania-todos/target/wheels/vimania_todos-0.1.0-cp311-cp311-macosx_11_0_arm64.whl
+	maturin develop
+	#maturin build
+	#pip install --force-reinstall /Users/Q187392/dev/s/public/vimania-todos/target/wheels/vimania_todos-0.1.0-cp311-cp311-macosx_11_0_arm64.whl
 
 .PHONY: dev
 dev: _confirm clean-vim  ## develop python module, prep accordingly
