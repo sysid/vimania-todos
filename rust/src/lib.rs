@@ -1,3 +1,5 @@
+mod schema;
+
 use pyo3::prelude::*;
 
 /// Formats the sum of two numbers as string.
@@ -38,7 +40,15 @@ mod test {
 
     #[rstest]
     #[case(1, 2, "103".to_string())]
+    #[ignore = "Error: symbol not found in flat namespace '_PyBytes_AsString'"]
     fn test_sum_as_string(#[case] x: usize, #[case] y: usize, #[case] expected: String) {
+        debug!("({}:{}) {:?}", function_name!(), line!(), expected);
+        assert_eq!(sum_as_string(x, y).unwrap(), expected);
+    }
+
+    #[rstest]
+    #[case(1, 2, "103".to_string())]
+    fn test_sum_as_string2(#[case] x: usize, #[case] y: usize, #[case] expected: String) {
         debug!("({}:{}) {:?}", function_name!(), line!(), expected);
         assert_eq!(sum_as_string2(x, y).unwrap(), expected);
     }
