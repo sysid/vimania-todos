@@ -1,3 +1,4 @@
+diesel.db
 pythonx/*
 !pythonx/README.md
 !pythonx/vimania_todos

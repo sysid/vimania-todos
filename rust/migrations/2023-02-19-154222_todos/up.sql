@@ -36,6 +36,7 @@ create
     "path",
     flags UNINDEXED,
     last_update_ts UNINDEXED,
+    created_at UNINDEXED,
     content='vimania_todos',
     content_rowid='id',
     tokenize="porter unicode61"
@@ -98,22 +99,15 @@ create table todos_fts_idx
 
 */
 insert into main.vimania_todos (id, parent_id, todo, metadata, tags, desc, path, flags, last_update_ts, created_at)
-values (1, null, 'todo 1', 'TEST: entry for bookmark xxxxx', ',ccc,vimania,yyy,', 'nice description b', 'filepath', 1,
-        '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
-       (2, null, 'todo 2', 'TEST: entry for bookmark bbbb', ',aaa,bbb,', 'nice description a', 'filepath', 0,
-        '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
+values (1, null, 'todo 1', 'TEST: entry for bookmark xxxxx', ',ccc,vimania,yyy,', 'nice description b', 'filepath', 1, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
+       (2, null, 'todo 2', 'TEST: entry for bookmark bbbb', ',aaa,bbb,', 'nice description a', 'filepath', 0, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
        (3, null, 'todo 3', 'bla blub', ',aaa,bbb,', 'nice description a2', 'filepath', 1, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
-       (4, 3, 'todo 4', 'bla blub2', ',aaa,bbb,ccc,', 'nice description a3', 'filepath', 1, '2023-02-19 13:05:02',
-        '2023-02-19 13:05:02'),
-       (5, 3, 'todo 5 inconsistency', 'blub3', ',aaa,bbb,ccc,', 'nice description a4', 'filepath', 1,
-        '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
-       (6, 3, 'todo 5 inconsistency', 'blub3', ',aaa,bbb,ccc,', 'INCONSISTENCY!!!!!, active at the same time',
-        'filepath', 1, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
-       (7, 6, 'todo 6', 'uniq test: allow same todos but not active at same time', ',,', '', 'filepath', 4,
-        '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
-       (8, 6, 'todo 6', 'uniq test: allow same todos but not active at same time', ',,', '', 'filepath', 1,
-        '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
+       (4, 3, 'todo 4', 'bla blub2', ',aaa,bbb,ccc,', 'nice description a3', 'filepath', 1, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
+       (5, 3, 'todo 5 inconsistency', 'blub3', ',aaa,bbb,ccc,', 'nice description a4', 'filepath', 1, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
+       (6, 3, 'todo 5 inconsistency', 'blub3', ',aaa,bbb,ccc,', 'INCONSISTENCY!!!!!, active at the same time', 'filepath', 1, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
+       (7, 6, 'todo 6', 'uniq test: allow same todos but not active at same time', ',,', '', 'filepath', 4, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
+       (8, 6, 'todo 6', 'uniq test: allow same todos but not active at same time', ',,', '', 'filepath', 1, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
        (9, 8, 'todo 7', '', ',,', '', 'filepath', 1, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
        (10, 3, 'todo 8', '', ',,', '', 'filepath', 1, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
-       (11, '2023-02-19 13:05:02', 'todo 9', '', ',,', '', 'filepath', 0, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
+       (11, null, 'todo 9', '', ',,', '', 'filepath', 0, '2023-02-19 13:05:02', '2023-02-19 13:05:02'),
        (12, 11, 'todo 10', '', ',,', '', 'filepath', 4, '2023-02-19 13:05:02', '2023-02-19 13:05:02');

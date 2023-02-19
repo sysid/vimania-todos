@@ -1,4 +1,9 @@
-mod schema;
+pub mod schema;
+pub mod dal;
+pub mod models;
+pub mod tag;
+pub mod environment;
+pub mod helper;
 
 use pyo3::prelude::*;
 
@@ -38,13 +43,14 @@ mod test {
             .try_init();
     }
 
-    #[rstest]
-    #[case(1, 2, "103".to_string())]
-    #[ignore = "Error: symbol not found in flat namespace '_PyBytes_AsString'"]
-    fn test_sum_as_string(#[case] x: usize, #[case] y: usize, #[case] expected: String) {
-        debug!("({}:{}) {:?}", function_name!(), line!(), expected);
-        assert_eq!(sum_as_string(x, y).unwrap(), expected);
-    }
+    //// must be commented out, ignore not enough
+    // #[rstest]
+    // #[case(1, 2, "103".to_string())]
+    // #[ignore = "Error: symbol not found in flat namespace '_PyBytes_AsString'"]
+    // fn test_sum_as_string(#[case] x: usize, #[case] y: usize, #[case] expected: String) {
+    //     debug!("({}:{}) {:?}", function_name!(), line!(), expected);
+    //     assert_eq!(sum_as_string(x, y).unwrap(), expected);
+    // }
 
     #[rstest]
     #[case(1, 2, "103".to_string())]
