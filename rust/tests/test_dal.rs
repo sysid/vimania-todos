@@ -3,7 +3,7 @@ use rstest::{fixture, rstest};
 use std::collections::HashSet;
 use stdext::function_name;
 use vimania_todos::dal::Dal;
-use vimania_todos::environment::VIMANIA_TEST_DB_URL;
+use vimania_todos::environment::{CONFIG, VIMANIA_TEST_DB_URL};
 use vimania_todos::helper;
 use vimania_todos::models::NewTodo;
 
@@ -117,3 +117,36 @@ fn test_delete_todo2(mut dal: Dal) {
     assert_eq!(bms.len(), 0);
 }
 
+#[rstest]
+#[allow(non_snake_case)]
+fn test__get_all_tags(mut dal: Dal) {
+    let tags = dal.get_all_tags().unwrap();
+    debug!("({}:{}) {:?}", function_name!(), line!(), tags);
+
+    let mut tags_str: Vec<&str> = Vec::new();
+    for (i, _t) in tags.iter().enumerate() {
+        tags_str.push(&tags[i].tag);
+    }
+    println!("The bookmarks are: {:?}", tags_str);
+    let expected: HashSet<&str> = ["ccc", "bbb", "aaa", "yyy", "vimania"]
+        .iter()
+        .cloned()
+        .collect();
+    let result: HashSet<&str> = tags_str.iter().cloned().collect();
+    assert_eq!(result, expected);
+}
+
+#[rstest]
+fn test_get_related_tags(mut dal: Dal) {
+    let tags = dal.get_related_tags("ccc").unwrap();
+    let mut tags_str: Vec<&str> = Vec::new();
+    for (i, _t) in tags.iter().enumerate() {
+        tags_str.push(&tags[i].tag);
+    }
+    let expected: HashSet<&str> = ["ccc", "bbb", "aaa", "yyy", "vimania"]
+        .iter()
+        .cloned()
+        .collect();
+    let result: HashSet<&str> = tags_str.iter().cloned().collect();
+    assert_eq!(result, expected);
+}

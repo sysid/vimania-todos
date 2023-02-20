@@ -16,6 +16,7 @@ def create_todo_(args: str, path: str) -> int:
     todo = parse_todo_str(args)
     todo.path = path
 
+    # TDOO: create rust function
     with DAL(env_config=config) as dal:
         todos = dal.get_todos(fts_query=todo.todo)
         _ = None
