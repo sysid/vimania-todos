@@ -1,5 +1,5 @@
 pure-sql
 pydantic
 requests
-sqlalchemy
+sqlalchemy<2
 typer
