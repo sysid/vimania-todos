@@ -4,6 +4,8 @@ pub mod models;
 pub mod tag;
 pub mod environment;
 pub mod helper;
+mod vim_todo;
+mod handle_buffer;
 
 use pyo3::prelude::*;
 

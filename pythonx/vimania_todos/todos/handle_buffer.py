@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import List, Match, Optional
+from typing import List, Match, Optional, Sequence
 
 from pydantic import BaseModel
 from vimania_todos.db.dal import DAL, Todo, TodoStatus
@@ -41,11 +41,11 @@ class VimTodo(BaseModel):
             self.raw_status = "[x]"
 
     @property
-    def tags(self) -> str:
+    def tags(self) -> Sequence[str]:
         return (
             self.raw_tags.strip("{t:").strip("}").strip().split(",")
             if self.raw_tags is not None
-            else ""
+            else "[]"
         )
 
     @property
