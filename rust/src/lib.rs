@@ -18,7 +18,7 @@ pub fn sum_as_string2(a: usize, b: usize) -> anyhow::Result<String> {
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn _vimania_todos(_py: Python, m: &PyModule) -> PyResult<()> {
+fn _vimania_todos(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
     Ok(())
 }

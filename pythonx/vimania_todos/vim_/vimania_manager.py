@@ -102,38 +102,38 @@ class VimaniaManager:
             pprint(locals)
         return locals
 
-    @staticmethod
-    @err_to_scratch_buffer
-    def create_todo(args: str, path: str):
-        _log.debug(f"{args=}, {path=}")
-        locals = VimaniaManager._get_locals()
-        assert isinstance(args, str), f"Error: input must be string, got {type(args)}."
-        assert isinstance(path, str), f"Error: input must be string, got {type(path)}."
-        id_ = create_todo_(args, path)
-        vim.command(f"echom 'created/updated: {sanitize(args)} {id_=}'")
-
-    @staticmethod
-    @err_to_scratch_buffer
-    def load_todos():
-        lineno = 10
-        # vim_helper.buf[lineno] = vim_helper.buf[lineno].rstrip()
-        current = vim.current
-
-        todos = load_todos_()
-
-        temp_path = f"{tempfile.gettempdir()}/todo_tmp.md"
-        _log.debug(f"{temp_path=}")
-
-        # scratch buffer
-        vim.command(f"edit {temp_path}")
-        # vim.command("set buftype=nofile")
-
-        vim.current.buffer[:] = todos
-
-        feedkeys(r"\<Esc>")
-        feedkeys(r"\<c-w>\<down>")
-        vim.command("set ft=markdown")
-        _log.info("Done")
+    # @staticmethod
+    # @err_to_scratch_buffer
+    # def create_todo(args: str, path: str):
+    #     _log.debug(f"{args=}, {path=}")
+    #     locals = VimaniaManager._get_locals()
+    #     assert isinstance(args, str), f"Error: input must be string, got {type(args)}."
+    #     assert isinstance(path, str), f"Error: input must be string, got {type(path)}."
+    #     id_ = create_todo_(args, path)
+    #     vim.command(f"echom 'created/updated: {sanitize(args)} {id_=}'")
+    #
+    # @staticmethod
+    # @err_to_scratch_buffer
+    # def load_todos():
+    #     lineno = 10
+    #     # vim_helper.buf[lineno] = vim_helper.buf[lineno].rstrip()
+    #     current = vim.current
+    #
+    #     todos = load_todos_()
+    #
+    #     temp_path = f"{tempfile.gettempdir()}/todo_tmp.md"
+    #     _log.debug(f"{temp_path=}")
+    #
+    #     # scratch buffer
+    #     vim.command(f"edit {temp_path}")
+    #     # vim.command("set buftype=nofile")
+    #
+    #     vim.current.buffer[:] = todos
+    #
+    #     feedkeys(r"\<Esc>")
+    #     feedkeys(r"\<c-w>\<down>")
+    #     vim.command("set ft=markdown")
+    #     _log.info("Done")
 
     @staticmethod
     @err_to_scratch_buffer
