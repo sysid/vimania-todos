@@ -31,13 +31,14 @@ Expect markdown (todos with links):
   -%4% [x] this is a text describing a task %%123%%
 
 
-Given (test-buffer text):
-  yyy://$HOME/dev/vim/vim-textobj-uri/test/vimania//vimania.pdf
-
-Execute(one todo should be created in vader DB):
-  VimaniaTodo - [ ] this i a todo without funnuy chars
-Then ():
-  Messages
-  Cfilter created
-  Log printf("Len of location list: %s", len(getqflist()))
-  Assert len(getqflist()) == 1
+""" TODO: create_todo is not needed
+" Given (test-buffer text):
+"   yyy://$HOME/dev/vim/vim-textobj-uri/test/vimania//vimania.pdf
+"
+" Execute(one todo should be created in vader DB):
+"   VimaniaTodo - [ ] this i a todo without funnuy chars
+" Then ():
+"   Messages
+"   Cfilter created
+"   Log printf("Len of location list: %s", len(getqflist()))
+"   Assert len(getqflist()) == 1
