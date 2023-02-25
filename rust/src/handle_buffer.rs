@@ -118,6 +118,21 @@ impl<'a> Line<'a> {
             }
         }
     }
+
+    pub fn line(&self) -> String {
+        if let Some(parsed_todo) = &self.parsed_todo {
+            let tabs = "\t".repeat(self.depth as usize);
+            let insert_code = if parsed_todo.fill1.starts_with(" ") {
+                parsed_todo.code.to_owned()
+            } else {
+                format!("{} ", parsed_todo.code)
+            };
+            format!("{}{}{}{}{}{}{}{}", tabs, parsed_todo.fill0.trim_end(), insert_code, parsed_todo.fill1, parsed_todo.status, parsed_todo.fill2, parsed_todo.todo_, parsed_todo.tags)
+        } else {
+            self._line.clone()
+        }
+        // &self._line
+    }
 }
 
 #[cfg(test)]
@@ -136,6 +151,14 @@ mod test {
             .is_test(true)
             // Ignore errors initializing the logger if tests race to configure it
             .try_init();
+    }
+
+    #[rstest]
+    fn test_line() {
+        let l = Line::new("-%123% [x] this is a text describing a task ", "testpath", None);
+        debug!("({}:{}) {:?}", function_name!(), line!(), l.line());
+        assert_eq!(l.line(), "-%123% [x] this is a text describing a task ");
+        assert_eq!(l.line(), l._line);
     }
 
     #[rstest]
