@@ -30,8 +30,8 @@ lazy_static! {
 
 #[cfg(test)]
 mod test {
-    use rstest::*;
     use super::*;
+    use rstest::*;
 
     #[ctor::ctor]
     fn init() {

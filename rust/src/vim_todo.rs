@@ -23,7 +23,12 @@ pub struct VimTodo {
 
 impl VimTodo {
     fn status(&self) -> TodoStatus {
-        let status = self.raw_status.trim().trim_start_matches('[').trim_end_matches(']').to_lowercase();
+        let status = self
+            .raw_status
+            .trim()
+            .trim_start_matches('[')
+            .trim_end_matches(']')
+            .to_lowercase();
         match status.as_str() {
             " " => TodoStatus::Open,
             "-" => TodoStatus::InProgress,
@@ -43,9 +48,15 @@ impl VimTodo {
     }
 
     fn tags(&self) -> Vec<String> {
-        let tags = self.raw_tags.trim_start_matches("{t:").trim_end_matches("}");
+        let tags = self
+            .raw_tags
+            .trim_start_matches("{t:")
+            .trim_end_matches("}");
         if !tags.is_empty() {
-            tags.split(',').map(|tag| tag.trim().to_owned()).sorted().collect()
+            tags.split(',')
+                .map(|tag| tag.trim().to_owned())
+                .sorted()
+                .collect()
         } else {
             vec![]
         }
@@ -56,7 +67,10 @@ impl VimTodo {
     }
 
     fn code(&self) -> String {
-        self.raw_code.trim_start_matches('%').trim_end_matches('%').to_owned()
+        self.raw_code
+            .trim_start_matches('%')
+            .trim_end_matches('%')
+            .to_owned()
     }
 
     fn add_code(mut self, code: &str) -> Self {
@@ -65,7 +79,10 @@ impl VimTodo {
     }
 
     fn vim_line(&self) -> String {
-        format!("-{} {} {}{}", self.raw_code, self.raw_status, self.todo, self.raw_tags)
+        format!(
+            "-{} {} {}{}",
+            self.raw_code, self.raw_status, self.todo, self.raw_tags
+        )
     }
 }
 

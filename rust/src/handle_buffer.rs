@@ -1,10 +1,10 @@
-use std::collections::LinkedList;
 use itertools::Itertools;
 use log::debug;
+use std::collections::LinkedList;
 use stdext::function_name;
 
-use regex::{Captures, Regex};
 use crate::vim_todo::VimTodo;
+use regex::{Captures, Regex};
 
 #[derive(Debug, PartialEq, Eq)]
 enum MatchEnum {
@@ -18,7 +18,6 @@ enum MatchEnum {
     TODO = 7,
     TAGS = 8,
 }
-
 
 #[derive(Debug, PartialOrd, PartialEq, Clone, Default)]
 struct ParsedTodo<'a> {
@@ -55,7 +54,10 @@ impl<'a> Line<'a> {
         }
 
         #[allow(non_snake_case)]
-            let TODO_PATTERN = Regex::new(r"^(\t*)(\s*[-*]\s?)(%\d+%)?(.?)(\[[ \-xXdD]{1}\])(\s+)([^{}]+?)(\{t:.+\})?$").unwrap();
+        let TODO_PATTERN = Regex::new(
+            r"^(\t*)(\s*[-*]\s?)(%\d+%)?(.?)(\[[ \-xXdD]{1}\])(\s+)([^{}]+?)(\{t:.+\})?$",
+        )
+        .unwrap();
         //// GOTCHA/BUG: Multiline not working
         // let TODO_PATTERN = Regex::new(r"(?x)
         //     ^
@@ -115,15 +117,13 @@ impl<'a> Line<'a> {
                 parsed_todo: None,
             }
         }
-
     }
 }
 
-
 #[cfg(test)]
 mod test {
-    use log::debug;
     use super::*;
+    use log::debug;
     use rstest::*;
     use stdext::function_name;
 

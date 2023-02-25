@@ -1,11 +1,11 @@
-pub mod schema;
 pub mod dal;
-pub mod models;
-pub mod tag;
 pub mod environment;
-pub mod helper;
-mod vim_todo;
 mod handle_buffer;
+pub mod helper;
+pub mod models;
+pub mod schema;
+pub mod tag;
+mod vim_todo;
 
 use pyo3::prelude::*;
 
@@ -24,7 +24,6 @@ fn _vimania_todos(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
     Ok(())
 }
-
 
 #[cfg(test)]
 mod test {

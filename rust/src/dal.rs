@@ -9,7 +9,7 @@ use diesel::{sql_query, Connection, RunQueryDsl, SqliteConnection};
 use log::debug;
 use stdext::function_name;
 
-use crate::models::{Todo, NewTodo, TagsFrequency};
+use crate::models::{NewTodo, TagsFrequency, Todo};
 use crate::schema::vimania_todos::dsl::vimania_todos;
 use crate::schema::vimania_todos::{desc, flags, id, metadata, parent_id, path, tags, todo};
 
@@ -21,7 +21,6 @@ pub struct Dal {
     url: String,
     pub conn: SqliteConnection,
 }
-
 
 impl Dal {
     pub fn new(url: String) -> Self {
