@@ -1,146 +1,162 @@
-use itertools::Itertools;
-use log::debug;
 use std::collections::LinkedList;
+
+use anyhow::anyhow;
+use diesel::result::DatabaseErrorKind;
+use itertools::Itertools;
+use log::{debug, error, info, warn};
+use regex::{Captures, Regex};
 use stdext::function_name;
 
-use crate::vim_todo::VimTodo;
-use regex::{Captures, Regex};
-
-#[derive(Debug, PartialEq, Eq)]
-enum MatchEnum {
-    ALL = 0,
-    LEVEL = 1,
-    FILL0 = 2,
-    CODE = 3,
-    FILL1 = 4,
-    STATUS = 5,
-    FILL2 = 6,
-    TODO = 7,
-    TAGS = 8,
-}
-
-#[derive(Debug, PartialOrd, PartialEq, Clone, Default)]
-struct ParsedTodo<'a> {
-    line: &'a str,
-    all: &'a str,
-    level: &'a str,
-    fill0: &'a str,
-    code: &'a str,
-    fill1: &'a str,
-    status: &'a str,
-    fill2: &'a str,
-    todo_: &'a str,
-    tags: &'a str,
-}
+use crate::dal::Dal;
+use crate::environment::CONFIG;
+use crate::models;
+use crate::vim_todo::{TodoStatus, VimTodo};
 
 #[derive(Debug)]
 struct Line<'a> {
-    _line: String,
-    is_todo: bool,
+    line: String,
     running_todos: LinkedList<&'a Line<'a>>,
-    depth: i32,
     parent_id: Option<i32>,
-    path: &'a str,
-    todo: Option<VimTodo>,
-    parsed_todo: Option<ParsedTodo<'a>>,
-    // match_: Option<Captures<'a>>,
+    path: String,
+    todo: VimTodo,
 }
 
 impl<'a> Line<'a> {
-    fn new(line: &'a str, path: &'a str, running_todos: Option<LinkedList<&'a Line<'a>>>) -> Self {
-        let mut new_running_todos = LinkedList::new();
-        if let Some(todos) = running_todos {
-            new_running_todos = todos;
+    fn new(line: String, path: String, running_todos: LinkedList<&'a Line<'a>>) -> Self {
+        Self {
+            line: line.clone(),
+            running_todos,
+            parent_id: None,
+            path,
+            todo: VimTodo::new(line),
         }
-
-        #[allow(non_snake_case)]
-        let TODO_PATTERN = Regex::new(
-            r"^(\t*)(\s*[-*]\s?)(%\d+%)?(.?)(\[[ \-xXdD]{1}\])(\s+)([^{}]+?)(\{t:.+\})?$",
-        )
-        .unwrap();
-        //// GOTCHA/BUG: Multiline not working
-        // let TODO_PATTERN = Regex::new(r"(?x)
-        //     ^
-        //     (?P<a>\t*)   # 1 tab indentation (hierarchy)
-        //     (?P<b>\s*[-*]\s?)
-        //     (?P<c>%\d+%)?
-        //     (?P<d>.?)
-        //     (?P<e>\[[ \-xXdD]{1}\])
-        //     (?P<f>\s+)
-        //     (?P<g>[^{}]+?)
-        //     (?P<h>\{t:.+\})?
-        //     $
-        //     ").unwrap();
-        // let match_ = TODO_PATTERN.captures(line).unwrap();
-        if let Some(captures) = TODO_PATTERN.captures(line) {
-            debug!("({}:{}) {:?}", function_name!(), line!(), captures);
-            let parsed_todo: ParsedTodo = ParsedTodo {
-                line,
-                all: captures.get(0).map_or("", |m| m.as_str()),
-                level: captures.get(1).map_or("", |m| m.as_str()),
-                fill0: captures.get(2).map_or("", |m| m.as_str()),
-                code: captures.get(3).map_or("", |m| m.as_str()),
-                fill1: captures.get(4).map_or("", |m| m.as_str()),
-                status: captures.get(5).map_or("", |m| m.as_str()),
-                fill2: captures.get(6).map_or("", |m| m.as_str()),
-                todo_: captures.get(7).map_or("", |m| m.as_str()),
-                tags: captures.get(8).map_or("", |m| m.as_str()),
-            };
-            debug!("({}:{}) {:?}", function_name!(), line!(), parsed_todo);
-            let todo: VimTodo = VimTodo {
-                raw_code: parsed_todo.code.to_owned(),
-                todo: parsed_todo.todo_.to_owned(),
-                raw_status: parsed_todo.status.to_owned(),
-                raw_tags: parsed_todo.tags.to_owned(),
-                match_: parsed_todo.all.to_owned(),
-            };
-            debug!("({}:{}) {:?}", function_name!(), line!(), todo);
-            Line {
-                _line: line.to_owned(),
-                is_todo: true,
-                running_todos: new_running_todos,
-                depth: parsed_todo.level.matches('\t').count() as i32,
-                parent_id: None,
-                path,
-                todo: Some(todo),
-                parsed_todo: Some(parsed_todo),
+    }
+    pub fn handle(&mut self) -> anyhow::Result<Option<String>> {
+        /**
+         * Handles a vim buffer line
+         *
+         * 1. Determines the parent id if applicable
+         * 2. updates the DB accordingly:
+         *     - creates new entry if new todos
+         *     - updates existing entry if changes in existing todos (id unchanged)
+         *
+         * returns updated line or None for deletion in buffer
+         */
+        match self.todo.status() {
+            TodoStatus::ToDelete => {
+                // self.delete_todo()?;
+                return Ok(None);  // remove from vim buffer
             }
-        } else {
-            Line {
-                _line: line.to_owned(),
-                is_todo: false,
-                running_todos: new_running_todos,
-                depth: 0,
-                parent_id: None,
-                path,
-                todo: None,
-                parsed_todo: None,
+            _ => {
+                // if todo.code() == "" {  // new vimania-todo_
+                //     let code = self.create_todo()?;
+                //     todo.set_code(code);
+                // } else {
+                //     // update existing vimania-todo_
+                //     *todo = self.update_todo()?.unwrap();
+                // }
+            }
+        }
+        return Ok(Some(self.todo.line()));
+    }
+
+
+    /*
+    pub fn handle_read(&mut self) -> anyhow::Result<Option<String>> {
+        if let Some(todo) = &mut self.todo {
+            match todo.status() {
+                TodoStatus::ToDelete => anyhow::Error::msg("Should not happen.").context("handle_read"),
+                _ => {
+                    if todo.code() == "" {
+                        warn!("({}:{}) Creating {:?} in read mode. Should only happen when re-initializing a re-set file", function_name!(), line!(), todo);
+                        todo.add_code(self.create_code());
+                    } else {
+                        todo = self.update_buffer_from_db();
+                    }
+                }
+                // _ => unreachable!(), // or return an error instead of panicking
+            }
+        }
+        Ok(Some(self.line()))
+    }
+    */
+
+    pub fn create_todo(&self) -> anyhow::Result<(i32)> {
+        let fts_query = format!("\"{}\"", self.todo.todo());
+        debug!("({}:{}) {:?}", function_name!(), line!(), fts_query);
+        let todos = Dal::new(CONFIG.db_url.clone()).get_todos_by_todo(self.todo.todo())?;
+
+        let new_todo = models::NewTodo {
+            parent_id: self.parent_id,
+            todo: self.todo.todo(),
+            metadata: "".to_string(),
+            tags: self.todo.tags_db_formatted(),
+            desc: "".to_string(),
+            path: self.path.to_string(),
+            flags: self.todo.status() as i32,
+        };
+
+        if todos.len() > 0 {
+            let active_todos: Vec<_> = todos
+                .iter()
+                .filter(|&todo| todo.flags < TodoStatus::Done as i32)
+                .cloned()
+                .collect();
+            if active_todos.len() > 0 {
+                return Err(anyhow!("Todo {:?} already exists and is active.", self.todo.todo()));
+            }
+        }
+        debug!("({}:{}) Creating {:?}.", function_name!(), line!(), new_todo);
+        let inserted = Dal::new(CONFIG.db_url.clone()).insert_todo(new_todo)?;
+        return Ok(inserted[0].id);
+    }
+
+    fn update_todo(&self) -> anyhow::Result<Option<VimTodo>> {
+        let code = self.todo.code().parse::<i32>()?;
+        let mut todo = Dal::new(CONFIG.db_url.clone()).get_todo_by_id(code);
+        match todo {
+            Ok(mut todo) => {
+                todo.todo = self.todo.todo();
+                todo.tags = self.todo.tags_db_formatted();
+                todo.parent_id = self.parent_id;
+                todo.path = self.path.to_string();
+                todo.flags = self.todo.status() as i32;
+                debug!("({}:{}) Updating in database: {:?}", function_name!(), line!(), todo);
+
+                Dal::new(CONFIG.db_url.clone()).update_todo(todo.clone())?;
+                Ok(Some(self.todo.clone()))
+            }
+            Err(e) => match e {
+                diesel::result::Error::NotFound => {
+                    info!("Cannot update non existing todo: {}", self.todo.todo());
+                    info!("Deleting from vim");
+                    Ok(None)
+                }
+                other_error => Err(anyhow!("Error: {}", other_error)),
             }
         }
     }
 
-    pub fn line(&self) -> String {
-        if let Some(parsed_todo) = &self.parsed_todo {
-            let tabs = "\t".repeat(self.depth as usize);
-            let insert_code = if parsed_todo.fill1.starts_with(" ") {
-                parsed_todo.code.to_owned()
-            } else {
-                format!("{} ", parsed_todo.code)
-            };
-            format!("{}{}{}{}{}{}{}{}", tabs, parsed_todo.fill0.trim_end(), insert_code, parsed_todo.fill1, parsed_todo.status, parsed_todo.fill2, parsed_todo.todo_, parsed_todo.tags)
-        } else {
-            self._line.clone()
-        }
-        // &self._line
+    /*
+    fn calc_parent_id(&self) {
+        error!("({}:{}) Not implemented{:?}", function_name!(), line!(), self);
     }
+    fn delete_todo(&self) {
+        todo!()
+    }
+     */
 }
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use log::debug;
     use rstest::*;
     use stdext::function_name;
+
+    use crate::environment::VIMANIA_TEST_DB_URL;
+    use crate::helper;
+
+    use super::*;
 
     #[ctor::ctor]
     fn init() {
@@ -152,6 +168,61 @@ mod test {
             // Ignore errors initializing the logger if tests race to configure it
             .try_init();
     }
+
+    #[fixture]
+    pub fn dal() -> Dal {
+        helper::init_logger();
+        let mut dal = Dal::new(String::from(VIMANIA_TEST_DB_URL));
+        helper::init_db(&mut dal.conn).expect("Error DB init");
+        dal
+    }
+
+    #[rstest]
+    fn test_update_todo(mut dal: Dal) {
+        // init linked list
+
+        let mut l = Line::new("- [ ] bla blub ()".to_string(), "testpath".to_string(), LinkedList::new());
+        debug!("({}:{}) {:?}", function_name!(), line!(), l);
+        let id = l.create_todo().unwrap();
+        l.todo.set_code(id);
+        l.todo.set_todo("updated bla blub ()".to_string());
+        l.todo.set_tags("tag1,tag2".to_string());
+        l.update_todo().unwrap();
+
+        let updated = dal.get_todo_by_id(id).unwrap();
+        assert_eq!(updated.todo, "updated bla blub ()");
+    }
+
+    #[rstest]
+    fn test_new() {
+        // init linked list
+
+        let l = Line::new("- [ ] bla blub ()".to_string(), "testpath".to_string(), LinkedList::new());
+        debug!("({}:{}) {:?}", function_name!(), line!(), l);
+    }
+
+    #[rstest]
+    #[case("- [ ] todo yyy", "testpath")]
+    fn test_create_todo(
+        mut dal: Dal,
+        #[case] line: &str,
+        #[case] path: &str,
+    ) {
+        let mut l = Line::new(line.to_string(), "testpath".to_string(), LinkedList::new());
+        debug!("({}:{}) {:?}", function_name!(), line!(), l);
+        l.create_todo().unwrap();
+
+        let todos = dal.get_todos("").unwrap();
+        assert_eq!(todos.len(), 13);
+    }
+}
+/*
+    #[rstest]
+    fn test_handle_read() {
+        let l = Line::new("- [ ] bla blub ()", "testpath", None);
+        debug!("({}:{}) {:?}", function_name!(), line!(), l);
+    }
+
 
     #[rstest]
     fn test_line() {
@@ -185,4 +256,29 @@ mod test {
         assert_eq!(l.todo.unwrap().todo, todo_);
         assert_eq!(l.parsed_todo.unwrap().tags, tags);
     }
+
+    #[rstest]
+    #[case("-%1% [x] todo 1", "-%1% [x] todo 1")]
+    fn test_handle(
+        mut dal: Dal,
+        #[case] line: &str,
+        #[case] result: &str,
+    ) {
+        let mut l = Line::new(line, "testpath", None);
+        // debug!("({}:{}) {:?}", function_name!(), line!(), l);
+        let new_line = l.handle().unwrap().unwrap();
+        assert_eq!(new_line, result);
+    }
+
+    #[rstest]
+    fn test_handle_update(mut dal: Dal) {
+        let mut l = Line::new("- [x] updateable task", "testpath", None);
+        // debug!("({}:{}) {:?}", function_name!(), line!(), l);
+        let new_line = l.handle().unwrap().unwrap();  // add to db
+        l.todo.unwrap().todo = "xxxxxxxxxxxxxxxxxxxxx".to_string();
+        let new_line = l.handle().unwrap().unwrap();  // update to db
+        assert_eq!(new_line, "-%13% [x] xxxxxxxxxxxxxxxxxxxxx");
+    }
 }
+
+ */

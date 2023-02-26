@@ -38,6 +38,14 @@ fn test_get_todo_by_id_non_existing(mut dal: Dal) {
 }
 
 #[rstest]
+fn test_get_todos_by_todo(mut dal: Dal) {
+    let todo = dal.get_todos_by_todo("todo 6".to_string());
+    println!("The todos are: {:?}", todo);
+    assert_eq!(todo.unwrap().len(), 2);
+    // assert_eq!(todo.unwrap().id, 1);
+}
+
+#[rstest]
 #[case("xxxxx", 1)]
 #[case("xx*", 1)]
 #[case("", 12)]

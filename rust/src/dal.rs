@@ -109,6 +109,17 @@ impl Dal {
         let bm = bms.bind::<Integer, _>(id_).get_result(&mut self.conn);
         Ok(bm?)
     }
+
+    pub fn get_todos_by_todo(&mut self, todo_: String) -> Result<Vec<Todo>, DieselError> {
+        // Ok(sql_query("SELECT id, URL, metadata, tags, desc, flags, last_update_ts FROM bookmarks").load::<Bookmark2>(conn)?)
+        let bms = sql_query(
+            "SELECT id, parent_id, todo, metadata, tags, desc, path, flags, last_update_ts, created_at FROM vimania_todos \
+            where todo = ?;",
+        );
+        let bms = bms.bind::<Text, _>(todo_).get_results(&mut self.conn);
+        Ok(bms?)
+    }
+
     pub fn get_todos(&mut self, query: &str) -> Result<Vec<Todo>, DieselError> {
         if query == "" {
             // select all
