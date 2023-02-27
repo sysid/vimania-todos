@@ -39,6 +39,12 @@ impl Dal {
     //     // diesel::delete(bookmarks.filter(id.eq(1))).execute(&mut self.conn)
     //     diesel::delete(vimania_todos.filter(id.eq(id_))).get_results(&mut self.conn)
     // }
+
+    /**
+     * Delete a todo_ and compact the table
+     *
+     * # Return the number of deleted rows
+     */
     pub fn delete_todo2(&mut self, id_: i32) -> Result<usize, DieselError> {
         sql_query("BEGIN TRANSACTION;").execute(&mut self.conn)?;
 

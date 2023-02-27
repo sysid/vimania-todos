@@ -45,7 +45,7 @@ impl<'a> Line<'a> {
         match self.todo.status() {
             TodoStatus::ToDelete => {
                 // self.delete_todo()?;
-                return Ok(None);  // remove from vim buffer
+                return Ok(None); // remove from vim buffer
             }
             _ => {
                 // if todo.code() == "" {  // new vimania-todo_
@@ -59,7 +59,6 @@ impl<'a> Line<'a> {
         }
         return Ok(Some(self.todo.line()));
     }
-
 
     /*
     pub fn handle_read(&mut self) -> anyhow::Result<Option<String>> {
@@ -103,15 +102,23 @@ impl<'a> Line<'a> {
                 .cloned()
                 .collect();
             if active_todos.len() > 0 {
-                return Err(anyhow!("Todo {:?} already exists and is active.", self.todo.todo()));
+                return Err(anyhow!(
+                    "Todo {:?} already exists and is active.",
+                    self.todo.todo()
+                ));
             }
         }
-        debug!("({}:{}) Creating {:?}.", function_name!(), line!(), new_todo);
+        debug!(
+            "({}:{}) Creating {:?}.",
+            function_name!(),
+            line!(),
+            new_todo
+        );
         let inserted = Dal::new(CONFIG.db_url.clone()).insert_todo(new_todo)?;
         return Ok(inserted[0].id);
     }
 
-    fn update_todo(&self) -> anyhow::Result<Option<VimTodo>> {
+    fn update_todo_in_db(&self) -> anyhow::Result<Option<VimTodo>> {
         let code = self.todo.code().parse::<i32>()?;
         let mut todo = Dal::new(CONFIG.db_url.clone()).get_todo_by_id(code);
         match todo {
@@ -121,7 +128,12 @@ impl<'a> Line<'a> {
                 todo.parent_id = self.parent_id;
                 todo.path = self.path.to_string();
                 todo.flags = self.todo.status() as i32;
-                debug!("({}:{}) Updating in database: {:?}", function_name!(), line!(), todo);
+                debug!(
+                    "({}:{}) Updating in database: {:?}",
+                    function_name!(),
+                    line!(),
+                    todo
+                );
 
                 Dal::new(CONFIG.db_url.clone()).update_todo(todo.clone())?;
                 Ok(Some(self.todo.clone()))
@@ -133,8 +145,29 @@ impl<'a> Line<'a> {
                     Ok(None)
                 }
                 other_error => Err(anyhow!("Error: {}", other_error)),
-            }
+            },
         }
+    }
+
+    fn update_vimtodo_from_db(&self) -> anyhow::Result<Option<VimTodo>> {
+        let code = self.todo.code().parse::<i32>()?;
+        let todo = Dal::new(CONFIG.db_url.clone()).get_todo_by_id(code)?;
+        Ok(Some(VimTodo::from(todo)))
+    }
+
+    fn delete_todo(&self) -> anyhow::Result<()> {
+        if self.todo.code() == "" {
+            debug!(
+                "({}:{}) Deleting from vim: {:?}",
+                function_name!(),
+                line!(),
+                "Nothing to do."
+            );
+            return Ok(());
+        }
+        let code = self.todo.code().parse::<i32>()?;
+        let n = Dal::new(CONFIG.db_url.clone()).delete_todo2(code)?;
+        Ok(())
     }
 
     /*
@@ -181,13 +214,17 @@ mod test {
     fn test_update_todo(mut dal: Dal) {
         // init linked list
 
-        let mut l = Line::new("- [ ] bla blub ()".to_string(), "testpath".to_string(), LinkedList::new());
+        let mut l = Line::new(
+            "- [ ] bla blub ()".to_string(),
+            "testpath".to_string(),
+            LinkedList::new(),
+        );
         debug!("({}:{}) {:?}", function_name!(), line!(), l);
         let id = l.create_todo().unwrap();
         l.todo.set_code(id);
         l.todo.set_todo("updated bla blub ()".to_string());
         l.todo.set_tags("tag1,tag2".to_string());
-        l.update_todo().unwrap();
+        l.update_todo_in_db().unwrap();
 
         let updated = dal.get_todo_by_id(id).unwrap();
         assert_eq!(updated.todo, "updated bla blub ()");
@@ -197,17 +234,17 @@ mod test {
     fn test_new() {
         // init linked list
 
-        let l = Line::new("- [ ] bla blub ()".to_string(), "testpath".to_string(), LinkedList::new());
+        let l = Line::new(
+            "- [ ] bla blub ()".to_string(),
+            "testpath".to_string(),
+            LinkedList::new(),
+        );
         debug!("({}:{}) {:?}", function_name!(), line!(), l);
     }
 
     #[rstest]
     #[case("- [ ] todo yyy", "testpath")]
-    fn test_create_todo(
-        mut dal: Dal,
-        #[case] line: &str,
-        #[case] path: &str,
-    ) {
+    fn test_create_todo(mut dal: Dal, #[case] line: &str, #[case] path: &str) {
         let mut l = Line::new(line.to_string(), "testpath".to_string(), LinkedList::new());
         debug!("({}:{}) {:?}", function_name!(), line!(), l);
         l.create_todo().unwrap();

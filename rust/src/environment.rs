@@ -2,7 +2,7 @@ use std::{env, process};
 
 use lazy_static::lazy_static;
 
-pub const VIMANIA_TEST_DB_URL: &'static str = "./tests/data/diesel.db";  // TODO: remove and use env var
+pub const VIMANIA_TEST_DB_URL: &'static str = "./tests/data/diesel.db"; // TODO: remove and use env var
 
 // #[allow(dead_code)]
 #[derive(Debug)]

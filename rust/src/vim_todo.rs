@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use std::fmt::Display;
 
+use crate::models::Todo;
 use itertools::Itertools;
 use log::debug;
 use regex::Regex;
@@ -30,12 +31,22 @@ pub struct VimTodo {
 }
 
 impl VimTodo {
+    pub fn from(todo: Todo) -> Self {
+        let mut vim_todo = VimTodo::default();
+        vim_todo.is_todo = true;
+        vim_todo.set_code(todo.id);
+        vim_todo.set_status(todo.flags);
+        vim_todo.set_todo(todo.todo);
+        vim_todo.set_tags(todo.tags);
+        vim_todo
+    }
+
     pub fn new(line_: String) -> Self {
         #[allow(non_snake_case)]
-            let TODO_PATTERN = Regex::new(
+        let TODO_PATTERN = Regex::new(
             r"^(\t*)(\s*[-*]\s?)(%\d+%)?(.?)(\[[ \-xXdD]{1}\])(\s+)([^{}]+?)(\{t:.+\})?$",
         )
-            .unwrap();
+        .unwrap();
         //// GOTCHA/BUG: Multiline not working
         // let TODO_PATTERN = Regex::new(r"(?x)
         //     ^
@@ -55,14 +66,30 @@ impl VimTodo {
             Self {
                 is_todo: true,
                 line_: line_.clone(),
-                level_: captures.get(1).map_or("".to_string(), |m| m.as_str().to_string()),
-                fill0_: captures.get(2).map_or("".to_string(), |m| m.as_str().to_string()),
-                code_: captures.get(3).map_or("".to_string(), |m| m.as_str().to_string()),
-                fill1_: captures.get(4).map_or("".to_string(), |m| m.as_str().to_string()),
-                status_: captures.get(5).map_or("".to_string(), |m| m.as_str().to_string()),
-                fill2_: captures.get(6).map_or("".to_string(), |m| m.as_str().to_string()),
-                todo_: captures.get(7).map_or("".to_string(), |m| m.as_str().to_string()),
-                tags_: captures.get(8).map_or("".to_string(), |m| m.as_str().to_string()),
+                level_: captures
+                    .get(1)
+                    .map_or("".to_string(), |m| m.as_str().to_string()),
+                fill0_: captures
+                    .get(2)
+                    .map_or("".to_string(), |m| m.as_str().to_string()),
+                code_: captures
+                    .get(3)
+                    .map_or("".to_string(), |m| m.as_str().to_string()),
+                fill1_: captures
+                    .get(4)
+                    .map_or("".to_string(), |m| m.as_str().to_string()),
+                status_: captures
+                    .get(5)
+                    .map_or("".to_string(), |m| m.as_str().to_string()),
+                fill2_: captures
+                    .get(6)
+                    .map_or("".to_string(), |m| m.as_str().to_string()),
+                todo_: captures
+                    .get(7)
+                    .map_or("".to_string(), |m| m.as_str().to_string()),
+                tags_: captures
+                    .get(8)
+                    .map_or("".to_string(), |m| m.as_str().to_string()),
             }
         } else {
             Self {
@@ -106,10 +133,7 @@ impl VimTodo {
     }
 
     pub fn tags(&self) -> Vec<String> {
-        let tags = self
-            .tags_
-            .trim_start_matches("{t:")
-            .trim_end_matches("}");
+        let tags = self.tags_.trim_start_matches("{t:").trim_end_matches("}");
         if !tags.is_empty() {
             tags.split(',')
                 .map(|tag| tag.trim().to_owned())
@@ -121,7 +145,11 @@ impl VimTodo {
     }
 
     pub fn set_tags(&mut self, tags: String) {
-        self.tags_ = tags.split(',').map(|tag| tag.trim().to_owned()).sorted().join(",");
+        self.tags_ = tags
+            .split(',')
+            .map(|tag| tag.trim().to_owned())
+            .sorted()
+            .join(",");
     }
 
     pub fn tags_db_formatted(&self) -> String {
@@ -141,7 +169,10 @@ impl VimTodo {
 
     pub fn line(&self) -> String {
         if self.is_todo {
-            format!("-{} {} {}{}", self.code_, self.status_, self.todo_, self.tags_, )
+            format!(
+                "-{} {} {}{}",
+                self.code_, self.status_, self.todo_, self.tags_,
+            )
         } else {
             self.line_.clone()
         }
@@ -156,6 +187,7 @@ impl Display for VimTodo {
 
 #[cfg(test)]
 mod test {
+    use crate::models::Todo;
     use log::debug;
     use rstest::*;
     use stdext::function_name;
@@ -211,5 +243,25 @@ mod test {
         debug!("({}:{}) {:?}", function_name!(), line!(), todo);
         assert_eq!(todo.tags(), vec![String::from("xxx"), String::from("zzz")]);
     }
-}
 
+    #[rstest]
+    fn test_from() {
+        let todo = Todo {
+            id: 1,
+            parent_id: None,
+            todo: "bla blub".to_string(),
+            metadata: "".to_string(),
+            tags: "".to_string(),
+            desc: "".to_string(),
+            path: "".to_string(),
+            flags: 1,
+            last_update_ts: Default::default(),
+            created_at: Default::default(),
+        };
+        debug!("({}:{}) {:?}", function_name!(), line!(), todo);
+        let vim_todo = VimTodo::from(todo);
+        debug!("({}:{}) {:?}", function_name!(), line!(), vim_todo);
+        assert_eq!(vim_todo.todo(), "bla blub");
+        assert_eq!(vim_todo.status(), TodoStatus::Open);
+    }
+}

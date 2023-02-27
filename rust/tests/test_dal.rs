@@ -108,6 +108,12 @@ fn test_clean_table(mut dal: Dal) {
 }
 
 #[rstest]
+fn test_delete_non_existing_todo2(mut dal: Dal) {
+    let n = dal.delete_todo2(9999).unwrap(); // asdf2
+    assert_eq!(n, 0);
+}
+
+#[rstest]
 fn test_delete_todo2(mut dal: Dal) {
     let n = dal.delete_todo2(4).unwrap(); // asdf2
     let mut ids = Vec::new();
