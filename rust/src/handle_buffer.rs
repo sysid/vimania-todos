@@ -37,20 +37,23 @@ impl Line {
      * returns updated line or None for deletion in buffer
      */
     pub fn handle(&mut self) -> anyhow::Result<Option<String>> {
-        match self.todo.status() {
-            // TODO calc_parent_id
-            TodoStatus::ToDelete => {
-                // self.delete_todo()?;
-                return Ok(None); // remove from vim buffer
-            }
-            _ => {
-                if self.todo.code() == "" {  // new vimania-todo_
-                    let code = self.create_todo()?;
-                    self.todo.set_code(code);
-                } else {
-                    // update existing vimania-todo_
-                    if let None = self.update_todo_in_db()? {
-                        return Ok(None); // remove from vim buffer
+        if self.todo.is_todo {
+            return match self.todo.status() {
+                TodoStatus::ToDelete => {
+                    self.delete_todo()?;
+                    Ok(None) // remove from vim buffer
+                }
+                _ => {
+                    return if self.todo.code() == "" {  // new vimania-todo_
+                        let code = self.create_todo()?;
+                        self.todo.set_code(code);
+                        Ok(Some(self.todo.line()))
+                    } else {
+                        // update existing vimania-todo_
+                        if let None = self.update_todo_in_db()? {
+                            return Ok(None); // remove from vim buffer
+                        }
+                        Ok(Some(self.todo.line()))
                     }
                 }
             }
@@ -59,24 +62,27 @@ impl Line {
     }
 
     pub fn handle_read(&mut self) -> anyhow::Result<Option<String>> {
-        match self.todo.status() {
-            TodoStatus::ToDelete => Err(anyhow!("({}:{}) Invalid code path: Trying to delete a todo in read mode", function_name!(), line!())),
-            _ => {
-                if self.todo.code() == "" {
-                    warn!("({}:{}) Creating {:?} in read mode. Should only happen when re-initializing a re-set file", function_name!(), line!(), self.todo);
-                    let code = self.create_todo()?;
-                    self.todo.set_code(code);
-                    Ok(Some(self.todo.line()))
-                } else {
-                    if let Some(todo) = self.update_vimtodo_from_db()? {
-                        self.todo = todo;
+        if self.todo.is_todo {
+            return match self.todo.status() {
+                TodoStatus::ToDelete => Err(anyhow!("({}:{}) Invalid code path: Trying to delete a todo in read mode", function_name!(), line!())),
+                _ => {
+                    return if self.todo.code() == "" {
+                        warn!("({}:{}) Creating {:?} in read mode. Should only happen when re-initializing a re-set file", function_name!(), line!(), self.todo);
+                        let code = self.create_todo()?;
+                        self.todo.set_code(code);
                         Ok(Some(self.todo.line()))
                     } else {
-                        return Ok(None); // remove from vim buffer
-                    }
+                        if let Some(todo) = self.update_vimtodo_from_db()? {
+                            self.todo = todo;
+                            Ok(Some(self.todo.line()))
+                        } else {
+                            Ok(None) // remove from vim buffer
+                        }
+                    };
                 }
-            }
+            };
         }
+        return Ok(Some(self.todo.line()));
     }
 
     pub fn create_todo(&self) -> anyhow::Result<i32> {

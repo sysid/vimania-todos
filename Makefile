@@ -14,7 +14,7 @@ VIM_PLUG="$(HOME)/dev/vim/tw-vim/config/plugins.vim"
 
 app_root = $(PROJ_DIR)
 app_root ?= .
-pkg_src =  $(app_root)/pythonx/vimania_todos
+pkg_src =  $(app_root)/src/vimania_todos
 tests_src = $(app_root)/tests
 
 .PHONY: all
@@ -32,7 +32,7 @@ rsdev:  ## rsdev
 	maturin develop
 
 .PHONY: rsbuild
-rsbuild:  ## rsbuild
+rsbuild: clean  ## rsbuild
 	maturin build
 	pip install --force-reinstall /Users/Q187392/dev/s/public/vimania-todos/rust/target/wheels/vimania_todos-0.1.0-cp311-cp311-macosx_11_0_arm64.whl --target pythonx
 
@@ -210,7 +210,7 @@ serve-docs:  ## - serve project html documentation
 CLEAN:  ## ############################################################
 
 .PHONY: clean
-clean: clean-build clean-pyc  ## remove all build, test, coverage and Python artifacts
+clean: clean-build clean-pyc clean-pythonx  ## remove all build, test, coverage and Python artifacts
 
 .PHONY: clean-build
 clean-build: ## remove build artifacts
@@ -226,6 +226,10 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
+
+.PHONY: clean-pythonx
+clean-pythonx:  ## clean-pythonx
+	rm -fr pythonx/vimania_todos*
 
 ################################################################################
 # Misc \
