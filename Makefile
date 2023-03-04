@@ -35,8 +35,10 @@ rsbuild:  ## rsbuild
 
 .PHONY: rstest
 rstest:   ## rstest (must run DB test before to init ?!?)
+	# nocapture prints error messages !!!
 	#BKMR_DB_URL=../db/bkmr.db RUST_LOG=DEBUG pushd bkmr && cargo test --package bkmr -- --test-threads=1  # --nocapture
-	TW_VIMANIA_DB_URL=./rust/tests/data/vimania_todos_test.db RUST_LOG=DEBUG pushd rust && cargo test -- --test-threads=1  # --nocapture
+	#TW_VIMANIA_DB_URL=./rust/tests/data/vimania_todos_test.db RUST_LOG=DEBUG pushd rust && cargo test -- --test-threads=1  # --nocapture
+	TW_VIMANIA_DB_URL=./tests/data/diesel.db RUST_LOG=DEBUG pushd rust && cargo test -- --test-threads=1   --nocapture
 
 
 .PHONY: dev

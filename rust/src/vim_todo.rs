@@ -38,6 +38,7 @@ impl VimTodo {
         vim_todo.set_status(todo.flags);
         vim_todo.set_todo(todo.todo);
         vim_todo.set_tags(todo.tags);
+        debug!("({}:{}) ::from: {:?}", function_name!(), line!(), vim_todo);
         vim_todo
     }
 
@@ -134,7 +135,7 @@ impl VimTodo {
 
     pub fn tags(&self) -> Vec<String> {
         let tags = self.tags_.trim_start_matches("{t:").trim_end_matches("}");
-        if !tags.is_empty() {
+        if !tags.is_empty() && tags != ",," {
             tags.split(',')
                 .map(|tag| tag.trim().to_owned())
                 .sorted()
@@ -145,11 +146,15 @@ impl VimTodo {
     }
 
     pub fn set_tags(&mut self, tags: String) {
-        self.tags_ = tags
+        self.tags_ = format!("{{t:{}}}", tags
             .split(',')
             .map(|tag| tag.trim().to_owned())
+            .filter(|tag| !tag.is_empty())
             .sorted()
-            .join(",");
+            .join(","));
+        if self.tags_ == "{t:}" {
+            self.tags_ = String::new();
+        }
     }
 
     pub fn tags_db_formatted(&self) -> String {
@@ -237,11 +242,38 @@ mod test {
     }
 
     #[rstest]
+    #[case("zzz,xxx", "{t:xxx,zzz}")]
+    #[case(",xxx,", "{t:xxx}")]
+    #[case(",,", "")]
+    fn test_set_tags2(#[case] tags: &str, #[case] expected: &str) {
+        let mut todo = VimTodo::new("- [ ] bla".to_string());
+        todo.set_tags(tags.to_string());
+        debug!("({}:{}) {:?}", function_name!(), line!(), todo);
+        assert_eq!(todo.tags_, expected);
+    }
+
+    #[rstest]
+    #[case("- [ ] bla blub ()   {t:bla,blub}", "- [ ] bla blub ()   {t:bla,blub}")]
+    fn test_line(#[case] line: &str, #[case] expected: &str) {
+        let todo = VimTodo::new(line.to_string());
+        debug!("({}:{}) {:?}", function_name!(), line!(), todo);
+        assert_eq!(todo.line(), expected);
+    }
+
+    #[rstest]
     fn test_set_tags() {
         let mut todo = VimTodo::new("- [ ] bla blub ()   {t:bla,blub}".to_string());
         todo.set_tags("zzz,xxx".to_string());
         debug!("({}:{}) {:?}", function_name!(), line!(), todo);
         assert_eq!(todo.tags(), vec![String::from("xxx"), String::from("zzz")]);
+    }
+
+    #[rstest]
+    fn test_set_tags_semantic_empty() {
+        let mut todo = VimTodo::new("- [ ] bla blub ()   {t:bla,blub}".to_string());
+        todo.set_tags(",,".to_string());
+        debug!("({}:{}) {:?}", function_name!(), line!(), todo);
+        assert_eq!(todo.tags(), Vec::<String>::new());
     }
 
     #[rstest]

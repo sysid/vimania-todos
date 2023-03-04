@@ -48,39 +48,42 @@ impl<'a> Line<'a> {
                 return Ok(None); // remove from vim buffer
             }
             _ => {
-                // if todo.code() == "" {  // new vimania-todo_
-                //     let code = self.create_todo()?;
-                //     todo.set_code(code);
-                // } else {
-                //     // update existing vimania-todo_
-                //     *todo = self.update_todo()?.unwrap();
-                // }
+                if self.todo.code() == "" {  // new vimania-todo_
+                    let code = self.create_todo()?;
+                    self.todo.set_code(code);
+                } else {
+                    // update existing vimania-todo_
+                    if let None = self.update_todo_in_db()? {
+                        return Ok(None); // remove from vim buffer
+                    }
+                }
             }
         }
         return Ok(Some(self.todo.line()));
     }
 
-    /*
     pub fn handle_read(&mut self) -> anyhow::Result<Option<String>> {
-        if let Some(todo) = &mut self.todo {
-            match todo.status() {
-                TodoStatus::ToDelete => anyhow::Error::msg("Should not happen.").context("handle_read"),
-                _ => {
-                    if todo.code() == "" {
-                        warn!("({}:{}) Creating {:?} in read mode. Should only happen when re-initializing a re-set file", function_name!(), line!(), todo);
-                        todo.add_code(self.create_code());
+        match self.todo.status() {
+            TodoStatus::ToDelete => Err(anyhow!("({}:{}) Invalid code path: Trying to delete a todo in read mode", function_name!(), line!())),
+            _ => {
+                if self.todo.code() == "" {
+                    warn!("({}:{}) Creating {:?} in read mode. Should only happen when re-initializing a re-set file", function_name!(), line!(), self.todo);
+                    let code = self.create_todo()?;
+                    self.todo.set_code(code);
+                    Ok(Some(self.todo.line()))
+                } else {
+                    if let Some(todo) = self.update_vimtodo_from_db()? {
+                        self.todo = todo;
+                        Ok(Some(self.todo.line()))
                     } else {
-                        todo = self.update_buffer_from_db();
+                        return Ok(None); // remove from vim buffer
                     }
                 }
-                // _ => unreachable!(), // or return an error instead of panicking
             }
         }
-        Ok(Some(self.line()))
     }
-    */
 
-    pub fn create_todo(&self) -> anyhow::Result<(i32)> {
+    pub fn create_todo(&self) -> anyhow::Result<i32> {
         let fts_query = format!("\"{}\"", self.todo.todo());
         debug!("({}:{}) {:?}", function_name!(), line!(), fts_query);
         let todos = Dal::new(CONFIG.db_url.clone()).get_todos_by_todo(self.todo.todo())?;
@@ -149,10 +152,23 @@ impl<'a> Line<'a> {
         }
     }
 
-    fn update_vimtodo_from_db(&self) -> anyhow::Result<Option<VimTodo>> {
+    fn update_vimtodo_from_db(&mut self) -> anyhow::Result<Option<VimTodo>> {
         let code = self.todo.code().parse::<i32>()?;
-        let todo = Dal::new(CONFIG.db_url.clone()).get_todo_by_id(code)?;
-        Ok(Some(VimTodo::from(todo)))
+        let todo = Dal::new(CONFIG.db_url.clone()).get_todo_by_id(code);
+        match todo {
+            Ok(todo) => {
+                self.todo = VimTodo::from(todo);
+                Ok(Some(self.todo.clone()))
+            }
+            Err(e) => match e {
+                diesel::result::Error::NotFound => {
+                    info!("Cannot update non existing todo: {}", self.todo.todo());
+                    info!("Deleting from vim");
+                    Ok(None)
+                }
+                other_error => Err(anyhow!("Error: {}", other_error)),
+            },
+        }
     }
 
     fn delete_todo(&self) -> anyhow::Result<()> {
@@ -243,7 +259,7 @@ mod test {
     }
 
     #[rstest]
-    #[case("- [ ] todo yyy", "testpath")]
+    #[case("- [ ] todo yyy  ", "testpath")]
     fn test_create_todo(mut dal: Dal, #[case] line: &str, #[case] path: &str) {
         let mut l = Line::new(line.to_string(), "testpath".to_string(), LinkedList::new());
         debug!("({}:{}) {:?}", function_name!(), line!(), l);
@@ -252,70 +268,53 @@ mod test {
         let todos = dal.get_todos("").unwrap();
         assert_eq!(todos.len(), 13);
     }
-}
-/*
-    #[rstest]
-    fn test_handle_read() {
-        let l = Line::new("- [ ] bla blub ()", "testpath", None);
-        debug!("({}:{}) {:?}", function_name!(), line!(), l);
-    }
-
 
     #[rstest]
-    fn test_line() {
-        let l = Line::new("-%123% [x] this is a text describing a task ", "testpath", None);
-        debug!("({}:{}) {:?}", function_name!(), line!(), l.line());
-        assert_eq!(l.line(), "-%123% [x] this is a text describing a task ");
-        assert_eq!(l.line(), l._line);
-    }
-
-    #[rstest]
-    fn test_tags() {
-        let l = Line::new("- [ ] bla bub ()", "testpath", None);
-        debug!("({}:{}) {:?}", function_name!(), line!(), l);
-    }
-
-    #[rstest]
-    #[case("- [ ] bla blub ()", true, 0, "bla blub ()", "")]
-    #[case("    - [ ] bla blub ()", true, 0, "bla blub ()", "")]
-    #[case("\t- [ ] bla blub ()", true, 1, "bla blub ()", "")]
-    #[case("-%9% [ ] with tags {t:todo,py}", true, 0, "with tags ", "{t:todo,py}")]
-    fn test_line_parse(
-        #[case] line: &str,
-        #[case] is_todo: bool,
-        #[case] depth: i32,
-        #[case] todo_: String,
-        #[case] tags: String,
-    ) {
-        let l = Line::new(line, "testpath", None);
-        assert_eq!(l.is_todo, is_todo);
-        assert_eq!(l.depth, depth);
-        assert_eq!(l.todo.unwrap().todo, todo_);
-        assert_eq!(l.parsed_todo.unwrap().tags, tags);
-    }
-
-    #[rstest]
-    #[case("-%1% [x] todo 1", "-%1% [x] todo 1")]
-    fn test_handle(
-        mut dal: Dal,
-        #[case] line: &str,
-        #[case] result: &str,
-    ) {
-        let mut l = Line::new(line, "testpath", None);
-        // debug!("({}:{}) {:?}", function_name!(), line!(), l);
-        let new_line = l.handle().unwrap().unwrap();
+    #[case("-%13% [d] this is a text for deletion", None)]
+    #[case("-%999% [ ] this is a text for deletion", None)]
+    #[case("-%1% [x] todo 1", Some("-%1% [x] todo 1".to_string()))]
+    #[case("- [x] this is a text describing a task {t:py,todo}", Some("-%13% [x] this is a text describing a task {t:py,todo}".to_string()))]
+    fn test_handle(mut dal: Dal, #[case] todo_text: &str, #[case] result: Option<String>) {
+        debug!("({}:{}) {:?} {:?}", function_name!(), line!(), todo_text, result);
+        let mut l = Line::new(
+            todo_text.to_string(),
+            "testpath".to_string(),
+            LinkedList::new(),
+        );
+        let new_line = l.handle().unwrap();
         assert_eq!(new_line, result);
     }
 
     #[rstest]
-    fn test_handle_update(mut dal: Dal) {
-        let mut l = Line::new("- [x] updateable task", "testpath", None);
-        // debug!("({}:{}) {:?}", function_name!(), line!(), l);
-        let new_line = l.handle().unwrap().unwrap();  // add to db
-        l.todo.unwrap().todo = "xxxxxxxxxxxxxxxxxxxxx".to_string();
-        let new_line = l.handle().unwrap().unwrap();  // update to db
-        assert_eq!(new_line, "-%13% [x] xxxxxxxxxxxxxxxxxxxxx");
+    fn test_handle_read(mut dal: Dal) {
+        let mut l = Line::new(
+            "-%1% [x] this is a text describing a task {t:py,todo}".to_string(),
+            "testpath".to_string(),
+            LinkedList::new(),
+        );
+        let new_line = l.handle_read().unwrap();
+        assert_eq!(new_line, Some("-%1% [ ] todo 1{t:ccc,vimania,yyy}".to_string()));
+    }
+
+    #[rstest]
+    fn test_update_todo_in_db_not_found(mut dal: Dal) {
+        let mut l = Line::new(
+            "-%999% [ ] bla blub ()".to_string(),
+            "testpath".to_string(),
+            LinkedList::new(),
+        );
+        let result = l.update_todo_in_db().unwrap();
+        assert_eq!(result, None);
+    }
+
+    #[rstest]
+    fn test_update_vimtodo_from_db_not_found(mut dal: Dal) {
+        let mut l = Line::new(
+            "-%999% [ ] bla blub ()".to_string(),
+            "testpath".to_string(),
+            LinkedList::new(),
+        );
+        let result = l.update_vimtodo_from_db().unwrap();
+        assert_eq!(result, None);
     }
 }
-
- */
