@@ -13,19 +13,17 @@ use crate::models;
 use crate::vim_todo::{TodoStatus, VimTodo};
 
 #[derive(Debug)]
-struct Line<'a> {
+pub struct Line {
     line: String,
-    running_todos: LinkedList<&'a Line<'a>>,
     parent_id: Option<i32>,
     path: String,
     todo: VimTodo,
 }
 
-impl<'a> Line<'a> {
-    fn new(line: String, path: String, running_todos: LinkedList<&'a Line<'a>>) -> Self {
+impl Line {
+    pub fn new(line: String, path: String) -> Self {
         Self {
             line: line.clone(),
-            running_todos,
             parent_id: None,
             path,
             todo: VimTodo::new(line),
@@ -43,6 +41,7 @@ impl<'a> Line<'a> {
          * returns updated line or None for deletion in buffer
          */
         match self.todo.status() {
+            // TODO calc_parent_id
             TodoStatus::ToDelete => {
                 // self.delete_todo()?;
                 return Ok(None); // remove from vim buffer
@@ -233,7 +232,6 @@ mod test {
         let mut l = Line::new(
             "- [ ] bla blub ()".to_string(),
             "testpath".to_string(),
-            LinkedList::new(),
         );
         debug!("({}:{}) {:?}", function_name!(), line!(), l);
         let id = l.create_todo().unwrap();
@@ -253,7 +251,6 @@ mod test {
         let l = Line::new(
             "- [ ] bla blub ()".to_string(),
             "testpath".to_string(),
-            LinkedList::new(),
         );
         debug!("({}:{}) {:?}", function_name!(), line!(), l);
     }
@@ -261,7 +258,7 @@ mod test {
     #[rstest]
     #[case("- [ ] todo yyy  ", "testpath")]
     fn test_create_todo(mut dal: Dal, #[case] line: &str, #[case] path: &str) {
-        let mut l = Line::new(line.to_string(), "testpath".to_string(), LinkedList::new());
+        let mut l = Line::new(line.to_string(), "testpath".to_string());
         debug!("({}:{}) {:?}", function_name!(), line!(), l);
         l.create_todo().unwrap();
 
@@ -279,7 +276,6 @@ mod test {
         let mut l = Line::new(
             todo_text.to_string(),
             "testpath".to_string(),
-            LinkedList::new(),
         );
         let new_line = l.handle().unwrap();
         assert_eq!(new_line, result);
@@ -290,7 +286,6 @@ mod test {
         let mut l = Line::new(
             "-%1% [x] this is a text describing a task {t:py,todo}".to_string(),
             "testpath".to_string(),
-            LinkedList::new(),
         );
         let new_line = l.handle_read().unwrap();
         assert_eq!(new_line, Some("-%1% [ ] todo 1{t:ccc,vimania,yyy}".to_string()));
@@ -301,7 +296,6 @@ mod test {
         let mut l = Line::new(
             "-%999% [ ] bla blub ()".to_string(),
             "testpath".to_string(),
-            LinkedList::new(),
         );
         let result = l.update_todo_in_db().unwrap();
         assert_eq!(result, None);
@@ -312,7 +306,6 @@ mod test {
         let mut l = Line::new(
             "-%999% [ ] bla blub ()".to_string(),
             "testpath".to_string(),
-            LinkedList::new(),
         );
         let result = l.update_vimtodo_from_db().unwrap();
         assert_eq!(result, None);
