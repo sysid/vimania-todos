@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+#[allow(dead_code)]
 use std::fmt::Display;
 
 use crate::models::Todo;

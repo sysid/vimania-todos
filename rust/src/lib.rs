@@ -10,8 +10,8 @@ mod vim_todo;
 use log::debug;
 use stdext::function_name;
 use pyo3::prelude::*;
-use crate::dal::Dal;
 use crate::handle_buffer::Line;
+use crate::vim_todo::VimTodo;
 
 /// Formats the sum of two numbers as string.
 #[pyfunction]
@@ -27,7 +27,7 @@ pub fn sum_as_string2(a: usize, b: usize) -> anyhow::Result<String> {
 fn handle_it(lines: Vec<String>, path: String, read: bool) -> PyResult<Vec<String>> {
     debug!("({}:{}) {:?}, {:?}, {:?}", function_name!(), line!(), lines, path, read);
     // Ok(handle_buffer::handle_it(lines, path, read))
-    Ok(vec!["bla".to_string(), "blub".to_string()])
+    _handle_it(lines, path, read).map_err(|e| e.into())
 }
 
 fn _handle_it(lines: Vec<String>, path: String, read: bool) -> anyhow::Result<Vec<String>> {
@@ -56,16 +56,34 @@ fn _handle_it(lines: Vec<String>, path: String, read: bool) -> anyhow::Result<Ve
     return Ok(new_lines);
 }
 
+#[pyfunction]
+fn delete_todo(text: String, path: String) -> PyResult<()> {
+    debug!("({}:{}) {:?}, {:?}, {:?}", function_name!(), line!(), lines, path, read);
+    _delete_todo(text, path).map_err(|e| e.into())
+    // _delete_todo(text, path)?;
+    // Ok(())
+}
+
+fn _delete_todo(text: String, path: String) -> anyhow::Result<()> {
+    let line = Line::new(text, path.to_owned());
+    if line.is_todo {
+        line.delete_todo()?;
+    }
+    Ok(())
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn _vimania_todos(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
     m.add_function(wrap_pyfunction!(handle_it, m)?)?;
+    m.add_function(wrap_pyfunction!(delete_todo, m)?)?;
     Ok(())
 }
 
 #[cfg(test)]
 mod test {
+    use crate::dal::Dal;
     use log::debug;
     // use log::debug;
     use super::*;
@@ -94,7 +112,17 @@ mod test {
 
     #[rstest]
     #[case(vec ! ["- [ ] bla bub ()"], vec ! ["-%13% [ ] bla bub ()"])]
-    fn test_handle_it(mut dal: Dal, #[case] lines: Vec<&str>, #[case] expected: Vec<&str>) {
+    #[case(vec ! ["- [ ] bla bub '()'"], vec ! ["-%13% [ ] bla bub '()'"])]
+    #[case(vec ! ["'- [ ] invalid single quote'"], vec ! ["'- [ ] invalid single quote'"])]
+    #[case(vec ! ["- [b] xxxx: invalid"], vec ! ["- [b] xxxx: invalid"])]
+    #[case(vec ! ["[ ] xxxx: invalid"], vec ! ["[ ] xxxx: invalid"])]
+    #[case(vec ! ["-%15% [x] this is a non existing task"], vec ! [])]
+    #[case(vec ! ["- [x] this is a text describing a task %123%"], vec ! ["-%13% [x] this is a text describing a task %123%"])]
+    #[case(vec ! ["-%123% [d] should be deleted"], vec ! [])]
+    #[case(vec ! ["- [D] should be deleted"], vec ! [])]
+    #[case(vec ! ["   - [ ] bla bub ()"], vec ! ["-%13% [ ] bla bub ()"])]
+    #[case(vec ! ["xxx  - [x] completed task test"], vec ! ["xxx  - [x] completed task test"])]
+    fn test_handle_it(dal: Dal, #[case] lines: Vec<&str>, #[case] expected: Vec<&str>) {
         debug!("({}:{}) {:?}, {:?}", function_name!(), line!(), lines, expected);
         let lines: Vec<String> = lines.into_iter().map(String::from).collect();
         let expected: Vec<String> = expected.into_iter().map(String::from).collect();

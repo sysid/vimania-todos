@@ -170,7 +170,7 @@ impl Line {
         }
     }
 
-    fn delete_todo(&self) -> anyhow::Result<()> {
+    pub fn delete_todo(&self) -> anyhow::Result<()> {
         if self.todo.code() == "" {
             debug!(
                 "({}:{}) Deleting from vim: {:?}",

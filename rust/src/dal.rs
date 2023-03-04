@@ -1,7 +1,6 @@
 use std::fmt;
 use std::fmt::Debug;
 
-use diesel::connection::SimpleConnection;
 use diesel::prelude::*;
 use diesel::result::Error as DieselError;
 use diesel::sql_types::{Integer, Text};
@@ -11,7 +10,7 @@ use stdext::function_name;
 
 use crate::models::{NewTodo, TagsFrequency, Todo};
 use crate::schema::vimania_todos::dsl::vimania_todos;
-use crate::schema::vimania_todos::{desc, flags, id, metadata, parent_id, path, tags, todo};
+use crate::schema::vimania_todos::{desc, flags, metadata, parent_id, path, tags, todo};
 
 // use crate::schema::bookmarks;
 

@@ -3,7 +3,7 @@ use rstest::{fixture, rstest};
 use std::collections::HashSet;
 use stdext::function_name;
 use vimania_todos::dal::Dal;
-use vimania_todos::environment::{CONFIG, VIMANIA_TEST_DB_URL};
+use vimania_todos::environment::{VIMANIA_TEST_DB_URL};
 use vimania_todos::helper;
 use vimania_todos::models::NewTodo;
 
