@@ -74,6 +74,7 @@ fn delete_todo_(text: String, path: String) -> anyhow::Result<()> {
 /// A Python module implemented in Rust.
 #[pymodule]
 fn _vimania_todos(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+    pyo3_log::init();
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
     m.add_function(wrap_pyfunction!(handle_it, m)?)?;
     m.add_function(wrap_pyfunction!(delete_todo, m)?)?;
