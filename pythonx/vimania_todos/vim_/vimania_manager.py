@@ -1,17 +1,15 @@
 import logging
-import tempfile
 import traceback
 from functools import wraps
 from pathlib import Path
 from pprint import pprint
 from typing import Dict, Tuple
 
+# noinspection PyUnresolvedReferences,PyProtectedMember
+from vimania_todos import _vimania_todos
 from vimania_todos.exception import VimaniaException
 from vimania_todos.helper.helper import sanitize
-from vimania_todos.todos.handle_buffer import delete_todo_, handle_it
-from vimania_todos.todos.handler import create_todo_, load_todos_
 from vimania_todos.vim_ import vim_helper
-from vimania_todos.vim_.vim_helper import feedkeys
 
 """ Python VIM Interface Wrapper """
 
@@ -151,9 +149,11 @@ class VimaniaManager:
         path = vim.eval("expand('%:p')")
         _log.debug(f"{args=}, {path=}")
         if args == "read":  # autocmd bufread
-            new_text = handle_it(vim.current.buffer[:], path, read=True)
+            # new_text = handle_it(vim.current.buffer[:], path, read=True)
+            new_text = _vimania_todos.handle_it(vim.current.buffer[:], path, read=True)
         else:  # autocmd bufwrite
-            new_text = handle_it(vim.current.buffer[:], path, read=False)
+            # new_text = handle_it(vim.current.buffer[:], path, read=False)
+            new_text = _vimania_todos.handle_it(vim.current.buffer[:], path, read=False)
 
         # Bug: Vista buffer is not modifiable
         is_modifiable = vim.current.buffer.options["modifiable"]
@@ -171,9 +171,10 @@ class VimaniaManager:
         locals = VimaniaManager._get_locals()
         assert isinstance(args, str), f"Error: input must be string, got {type(args)}."
         # id_ = create_todo_(args, path)
-        id_ = delete_todo_(args, path)
-        _log.debug(f"deleted: {args=} {id_=}")
-        vim.command(f"echom 'deleted: {sanitize(args)} {id_=}'")
+        # id_ = delete_todo_(args, path)
+        _ = _vimania_todos.delete_todo(args, path)
+        _log.debug(f"deleted: {args=}")
+        vim.command(f"echom 'deleted: {sanitize(args)}'")
 
     @staticmethod
     @err_to_scratch_buffer

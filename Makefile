@@ -27,11 +27,14 @@ all: clean build upload  ## Build and upload
 # Development \
 DEVELOPMENT:  ## ############################################################
 
+.PHONY: rsdev
+rsdev:  ## rsdev
+	maturin develop
+
 .PHONY: rsbuild
 rsbuild:  ## rsbuild
-	maturin develop
-	#maturin build
-	#pip install --force-reinstall /Users/Q187392/dev/s/public/vimania-todos/target/wheels/vimania_todos-0.1.0-cp311-cp311-macosx_11_0_arm64.whl
+	maturin build
+	pip install --force-reinstall /Users/Q187392/dev/s/public/vimania-todos/rust/target/wheels/vimania_todos-0.1.0-cp311-cp311-macosx_11_0_arm64.whl --target pythonx
 
 .PHONY: rstest
 rstest:   ## rstest (must run DB test before to init ?!?)
@@ -55,7 +58,7 @@ TESTING:  ## ############################################################
 
 .PHONY: test
 test:  ## run tests
-	TW_VIMANIA_DB_URL=sqlite:///tests/data/vimania_todos_test.db python -m pytest -ra --junitxml=report.xml --cov-config=setup.cfg --cov-report=xml --cov-report term --cov=$(pkg_src) -vv tests/
+	TW_VIMANIA_DB_URL=sqlite:///rust/tests/data/vimania_todos_test.db python -m pytest -ra --junitxml=report.xml --cov-config=setup.cfg --cov-report=xml --cov-report term --cov=$(pkg_src) -vv tests/
 
 .PHONY: test-vim
 test-vim:  test-vim-todos  ## run tests-vim (requires libs in pythonx: make build-vim)
@@ -102,7 +105,8 @@ build: clean clean-vim ## build
 
 .PHONY: build-vim
 build-vim: _confirm clean-vim ## clean and re-install via pip into pythonx
-	pip install -r pythonx/requirements.txt --target pythonx
+	#pip install -r pythonx/requirements.txt --target pythonx
+	#pip install --force-reinstall /Users/Q187392/dev/s/public/vimania-todos/target/wheels/vimania_todos-0.1.0-cp311-cp311-macosx_11_0_arm64.whl --target pythonx
 
 
 .PHONY: clean-vim

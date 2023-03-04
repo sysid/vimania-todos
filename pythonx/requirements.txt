@@ -1,5 +1,0 @@
-pure-sql
-pydantic
-requests
-sqlalchemy < 2
-typer
