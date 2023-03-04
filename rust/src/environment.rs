@@ -2,7 +2,7 @@ use std::{env, process};
 
 use lazy_static::lazy_static;
 
-pub const VIMANIA_TEST_DB_URL: &'static str = "./tests/data/diesel.db"; // TODO: remove and use env var
+pub const VIMANIA_TEST_RS_URL: &'static str = "./tests/data/diesel.db"; // TODO: remove and use env var
 
 // #[allow(dead_code)]
 #[derive(Debug)]
@@ -12,7 +12,7 @@ pub struct Config {
 
 impl Config {
     fn new() -> Config {
-        let db_url = env::var("TW_VIMANIA_DB_URL").unwrap_or(VIMANIA_TEST_DB_URL.to_string());
+        let db_url = env::var("TW_VIMANIA_RS_URL").unwrap_or(VIMANIA_TEST_RS_URL.to_string());
         // test db_url as path exists
         let path = std::path::Path::new(&db_url);
         if !path.exists() {

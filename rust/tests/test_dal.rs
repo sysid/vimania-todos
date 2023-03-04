@@ -3,14 +3,14 @@ use rstest::{fixture, rstest};
 use std::collections::HashSet;
 use stdext::function_name;
 use vimania_todos::dal::Dal;
-use vimania_todos::environment::{VIMANIA_TEST_DB_URL};
+use vimania_todos::environment::{VIMANIA_TEST_RS_URL};
 use vimania_todos::helper;
 use vimania_todos::models::NewTodo;
 
 #[fixture]
 pub fn dal() -> Dal {
     helper::init_logger();
-    let mut dal = Dal::new(String::from(VIMANIA_TEST_DB_URL));
+    let mut dal = Dal::new(String::from(VIMANIA_TEST_RS_URL));
     helper::init_db(&mut dal.conn).expect("Error DB init");
     dal
 }

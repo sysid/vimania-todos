@@ -16,7 +16,7 @@ extension-module = ["pyo3/extension-module"]
 default = ["extension-module"]
 
 [dependencies]
-pyo3 = { version = "0.18.0", features = ["extension-module"] }
+pyo3 = { version = "0.18.0", features = ["extension-module", "anyhow"] }
 
 anyhow = "1.0.68"
 camino = "1.1.2"

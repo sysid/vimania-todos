@@ -1,10 +1,5 @@
-use std::collections::LinkedList;
-
 use anyhow::anyhow;
-use diesel::result::DatabaseErrorKind;
-use itertools::Itertools;
-use log::{debug, error, info, warn};
-use regex::{Captures, Regex};
+use log::{debug, info, warn};
 use stdext::function_name;
 
 use crate::dal::Dal;
@@ -14,10 +9,11 @@ use crate::vim_todo::{TodoStatus, VimTodo};
 
 #[derive(Debug)]
 pub struct Line {
+    #[allow(dead_code)]
     line: String,
     parent_id: Option<i32>,
     path: String,
-    todo: VimTodo,
+    pub todo: VimTodo,
 }
 
 impl Line {
@@ -29,17 +25,18 @@ impl Line {
             todo: VimTodo::new(line),
         }
     }
+
+    /**
+     * Handles a vim buffer line
+     *
+     * 1. Determines the parent id if applicable
+     * 2. updates the DB accordingly:
+     *     - creates new entry if new todos
+     *     - updates existing entry if changes in existing todos (id unchanged)
+     *
+     * returns updated line or None for deletion in buffer
+     */
     pub fn handle(&mut self) -> anyhow::Result<Option<String>> {
-        /**
-         * Handles a vim buffer line
-         *
-         * 1. Determines the parent id if applicable
-         * 2. updates the DB accordingly:
-         *     - creates new entry if new todos
-         *     - updates existing entry if changes in existing todos (id unchanged)
-         *
-         * returns updated line or None for deletion in buffer
-         */
         match self.todo.status() {
             // TODO calc_parent_id
             TodoStatus::ToDelete => {
@@ -122,7 +119,7 @@ impl Line {
 
     fn update_todo_in_db(&self) -> anyhow::Result<Option<VimTodo>> {
         let code = self.todo.code().parse::<i32>()?;
-        let mut todo = Dal::new(CONFIG.db_url.clone()).get_todo_by_id(code);
+        let todo = Dal::new(CONFIG.db_url.clone()).get_todo_by_id(code);
         match todo {
             Ok(mut todo) => {
                 todo.todo = self.todo.todo();
@@ -181,7 +178,7 @@ impl Line {
             return Ok(());
         }
         let code = self.todo.code().parse::<i32>()?;
-        let n = Dal::new(CONFIG.db_url.clone()).delete_todo2(code)?;
+        let _ = Dal::new(CONFIG.db_url.clone()).delete_todo2(code)?;
         Ok(())
     }
 
@@ -201,7 +198,7 @@ mod test {
     use rstest::*;
     use stdext::function_name;
 
-    use crate::environment::VIMANIA_TEST_DB_URL;
+    use crate::environment::VIMANIA_TEST_RS_URL;
     use crate::helper;
 
     use super::*;
@@ -220,7 +217,7 @@ mod test {
     #[fixture]
     pub fn dal() -> Dal {
         helper::init_logger();
-        let mut dal = Dal::new(String::from(VIMANIA_TEST_DB_URL));
+        let mut dal = Dal::new(String::from(VIMANIA_TEST_RS_URL));
         helper::init_db(&mut dal.conn).expect("Error DB init");
         dal
     }

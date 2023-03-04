@@ -11,7 +11,6 @@ use log::debug;
 use stdext::function_name;
 use pyo3::prelude::*;
 use crate::handle_buffer::Line;
-use crate::vim_todo::VimTodo;
 
 /// Formats the sum of two numbers as string.
 #[pyfunction]
@@ -27,7 +26,7 @@ pub fn sum_as_string2(a: usize, b: usize) -> anyhow::Result<String> {
 fn handle_it(lines: Vec<String>, path: String, read: bool) -> PyResult<Vec<String>> {
     debug!("({}:{}) {:?}, {:?}, {:?}", function_name!(), line!(), lines, path, read);
     // Ok(handle_buffer::handle_it(lines, path, read))
-    _handle_it(lines, path, read).map_err(|e| e.into())
+    Ok(_handle_it(lines, path, read)?)
 }
 
 fn _handle_it(lines: Vec<String>, path: String, read: bool) -> anyhow::Result<Vec<String>> {
@@ -58,15 +57,15 @@ fn _handle_it(lines: Vec<String>, path: String, read: bool) -> anyhow::Result<Ve
 
 #[pyfunction]
 fn delete_todo(text: String, path: String) -> PyResult<()> {
-    debug!("({}:{}) {:?}, {:?}, {:?}", function_name!(), line!(), lines, path, read);
-    _delete_todo(text, path).map_err(|e| e.into())
-    // _delete_todo(text, path)?;
-    // Ok(())
+    debug!("({}:{}) {:?}, {:?}", function_name!(), line!(), text, path);
+    // delete_todo_(text, path).map_err(|e| e.into())
+    delete_todo_(text, path)?;
+    Ok(())
 }
 
-fn _delete_todo(text: String, path: String) -> anyhow::Result<()> {
+fn delete_todo_(text: String, path: String) -> anyhow::Result<()> {
     let line = Line::new(text, path.to_owned());
-    if line.is_todo {
+    if line.todo.is_todo {
         line.delete_todo()?;
     }
     Ok(())
@@ -89,7 +88,7 @@ mod test {
     use super::*;
     use rstest::*;
     use stdext::function_name;
-    use crate::environment::VIMANIA_TEST_DB_URL;
+    use crate::environment::VIMANIA_TEST_RS_URL;
 
     #[ctor::ctor]
     fn init() {
@@ -105,7 +104,7 @@ mod test {
     #[fixture]
     pub fn dal() -> Dal {
         helper::init_logger();
-        let mut dal = Dal::new(String::from(VIMANIA_TEST_DB_URL));
+        let mut dal = Dal::new(String::from(VIMANIA_TEST_RS_URL));
         helper::init_db(&mut dal.conn).expect("Error DB init");
         dal
     }

@@ -21,9 +21,9 @@ logging.basicConfig(format=log_fmt, level=logging.DEBUG, datefmt=datefmt)
 def init_db():
     # TWBM_DB_URL=sqlite:///test/tests_data/bm_test.db
     dsn = os.environ.get(
-        "TW_VIMANIA_DB_URL", "sqlite:///tests/data/vimania_todos_test.db"
+        "TW_VIMANIA_DB_URL", "sqlite:///rust/tests/data/vimania_todos_test.db"
     )
-    (Path(__file__).parent / "data/vimania_todos_test.db").unlink(missing_ok=True)
+    (Path(__file__).parent / "../rust/tests/data/vimania_todos_test.db").unlink(missing_ok=True)
     alembic_root = Path(__file__).parent.parent / "pythonx/vimania_todos/db"
 
     alembic_cfg = Config(str(alembic_root / "alembic.ini"))

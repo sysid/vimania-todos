@@ -1,7 +1,7 @@
 """create todo table
 
 Revision ID: ad8492b766f6
-Revises: 
+Revises:
 Create Date: 2021-08-07 09:49:44.567926
 
 """
@@ -83,7 +83,7 @@ def upgrade():
         sa.Column(
             "last_update_ts", sa.DateTime(), server_default=sa.func.current_timestamp()
         ),
-        sa.Column("created_at", sa.DateTime()),
+        sa.Column("created_at", sa.DateTime(), server_default=sa.func.current_timestamp()),
         sa.ForeignKeyConstraint(
             ("parent_id",),
             ["vimania_todos.id"],

@@ -145,7 +145,7 @@ impl Dal {
     }
 
     pub fn todo_exists(&mut self, url: &str) -> Result<bool, DieselError> {
-        /// check if a bookmark exists, exact match
+        // check if a bookmark exists, exact match
         let bms = sql_query(
             "SELECT id, parent_id, todo, metadata, tags, desc, path, flags, last_update_ts, created_at FROM vimania_todos \
             where todo = ?;",
