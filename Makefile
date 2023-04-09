@@ -34,7 +34,7 @@ rsdev:  ## rsdev
 .PHONY: rsbuild
 rsbuild: clean  ## rsbuild
 	maturin build
-	pip install --force-reinstall /Users/Q187392/dev/s/public/vimania-todos/rust/target/wheels/vimania_todos-0.1.0-cp311-cp311-macosx_11_0_arm64.whl --target pythonx
+	pip install --force-reinstall $(PROJ_DIR)/rust/target/wheels/vimania_todos-0.1.0-cp311-cp311-macosx_11_0_arm64.whl --target pythonx
 
 .PHONY: rstest
 rstest:   ## rstest (must run DB test before to init ?!?)
