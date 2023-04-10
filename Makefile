@@ -32,7 +32,7 @@ rsdev:  ## rsdev
 	maturin develop
 
 .PHONY: rsbuild
-rsbuild: clean  ## rsbuild
+rsbuild: clean  ## rsbuild and install in pythonx
 	maturin build
 	pip install --force-reinstall $(PROJ_DIR)/rust/target/wheels/vimania_todos-0.1.0-cp311-cp311-macosx_11_0_arm64.whl --target pythonx
 
@@ -55,9 +55,12 @@ dev-vim:  ## open vim plugin
 ################################################################################
 # Testing \
 TESTING:  ## ############################################################
-
 .PHONY: test
-test:  ## run tests
+test:  rstest pytest  ## all test
+	:
+
+.PHONY: pytest
+pytest:  ## run python tests
 	TW_VIMANIA_DB_URL=sqlite:///rust/tests/data/vimania_todos_test.db TW_VIMANIA_RS_URL=rust/tests/data/vimania_todos_test.db python -m pytest -ra --junitxml=report.xml --cov-config=setup.cfg --cov-report=xml --cov-report term --cov=$(pkg_src) -vv tests/
 
 .PHONY: test-vim

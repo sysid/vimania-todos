@@ -1,4 +1,5 @@
-diesel.db
+rust/tests/data/vimania_todos_test.db
+rust/tests/data/diesel.db
 pythonx/*
 !pythonx/README.md
 !pythonx/vimania_todos
