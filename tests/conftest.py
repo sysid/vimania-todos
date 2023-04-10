@@ -25,7 +25,7 @@ def init_db():
         "TW_VIMANIA_DB_URL", "sqlite:///rust/tests/data/vimania_todos_test.db"
     )
     (Path(__file__).parent / "../rust/tests/data/vimania_todos_test.db").unlink(missing_ok=True)
-    alembic_root = Path(__file__).parent.parent / "pythonx/vimania_todos/db"
+    alembic_root = Path(__file__).parent.parent / "src/vimania_todos/db"
 
     alembic_cfg = Config(str(alembic_root / "alembic.ini"))
     alembic_cfg.set_main_option("script_location", str(alembic_root / "alembic"))
