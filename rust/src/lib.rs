@@ -7,6 +7,10 @@ pub mod schema;
 pub mod tag;
 mod vim_todo;
 
+/*
+    Interface to Rust from Python
+ */
+
 use log::debug;
 use stdext::function_name;
 use pyo3::prelude::*;

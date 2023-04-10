@@ -13,7 +13,6 @@ from sqlalchemy.engine import Connection, Engine
 from vimania_todos.environment import ROOT_DIR
 
 _log = logging.getLogger("vimania-todos.dal")
-logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)
 
 metadata = sa.MetaData()
 
@@ -159,7 +158,7 @@ class DAL:
         query = """
             -- name: update_todo<!
             update vimania_todos
-            set parent_id = :parent_id, todo = :todo, metadata = :metadata, tags = :tags, flags = :flags, desc = :desc, path = :path 
+            set parent_id = :parent_id, todo = :todo, metadata = :metadata, tags = :tags, flags = :flags, desc = :desc, path = :path
             where id = :id
             returning *;
         """
