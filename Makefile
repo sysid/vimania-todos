@@ -45,7 +45,7 @@ rstest:   ## rstest (must run DB test before to init ?!?)
 
 
 .PHONY: dev
-dev: _confirm clean-vim  ## develop python module, prep accordingly
+dev: _confirm clean  ## develop python module and rust, clear pythonx
 	charm .
 
 .PHONY: dev-vim
@@ -90,32 +90,27 @@ tox:   ## Run tox
 # Building, Deploying \
 BUILDING:  ## ##################################################################
 
-.PHONY: copy-buku
-copy-buku:  ## copy-buku: copy buku.py from twbm
-	cp $(HOME)/dev/py/twbm/twbm/buku.py $(pkg_src)/buku.py
+#.PHONY: copy-buku
+#copy-buku:  ## copy-buku: copy buku.py from twbm
+#	cp $(HOME)/dev/py/twbm/twbm/buku.py $(pkg_src)/buku.py
 
-.PHONY: build
-build: clean clean-vim ## build
-	@echo "building"
-	#python setup.py sdist
-	cp README.md pythonx/
-	python -m build
+#.PHONY: build
+#build: clean clean-vim ## build
+#	@echo "building"
+#	#python setup.py sdist
+#	cp README.md pythonx/
+#	python -m build
 
 #.PHONY: build-vim-dev
 #build-vim-dev: _confirm ## copy all python packages into pythonx (for local installation)
 #	./scripts/cp_venv.sh dev
 #	cp -a ~/dev/py/pure-sql/src/pure_sql ~/dev/vim/vimania/pythonx
 
-.PHONY: build-vim
-build-vim: _confirm clean-vim ## clean and re-install via pip into pythonx
+#.PHONY: build-vim
+#build-vim: _confirm clean-vim ## clean and re-install via pip into pythonx
 	#pip install -r pythonx/requirements.txt --target pythonx
 	#pip install --force-reinstall /Users/Q187392/dev/s/public/vimania-todos/target/wheels/vimania_todos-0.1.0-cp311-cp311-macosx_11_0_arm64.whl --target pythonx
 
-
-.PHONY: clean-vim
-clean-vim:  ## clean pythonx directory for PyCharm development
-	@echo "Removing python packages from pythonx"
-	@pushd pythonx; git clean -d -x -f; popd
 
 .PHONY: requirements
 requirements:  ## create requirements.txt
@@ -211,7 +206,6 @@ serve-docs:  ## - serve project html documentation
 ################################################################################
 # Clean \
 CLEAN:  ## ############################################################
-
 .PHONY: clean
 clean: clean-build clean-pyc clean-pythonx  ## remove all build, test, coverage and Python artifacts
 
