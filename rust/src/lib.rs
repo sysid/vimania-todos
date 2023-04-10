@@ -59,11 +59,11 @@ fn _handle_it(lines: Vec<String>, path: String, read: bool) -> anyhow::Result<Ve
 fn delete_todo(text: String, path: String) -> PyResult<()> {
     debug!("({}:{}) {:?}, {:?}", function_name!(), line!(), text, path);
     // delete_todo_(text, path).map_err(|e| e.into())
-    delete_todo_(text, path)?;
+    _delete_todo(text, path)?;
     Ok(())
 }
 
-fn delete_todo_(text: String, path: String) -> anyhow::Result<()> {
+fn _delete_todo(text: String, path: String) -> anyhow::Result<()> {
     let line = Line::new(text, path.to_owned());
     if line.todo.is_todo {
         line.delete_todo()?;
@@ -112,6 +112,7 @@ mod test {
 
     #[rstest]
     #[case(vec ! ["- [ ] bla bub ()"], vec ! ["-%13% [ ] bla bub ()"])]
+    #[case(vec ! ["- [ ] bla bub () {t:tag}"], vec ! ["-%13% [ ] bla bub () {t:tag}"])]
     #[case(vec ! ["- [ ] bla bub '()'"], vec ! ["-%13% [ ] bla bub '()'"])]
     #[case(vec ! ["'- [ ] invalid single quote'"], vec ! ["'- [ ] invalid single quote'"])]
     #[case(vec ! ["- [b] xxxx: invalid"], vec ! ["- [b] xxxx: invalid"])]
@@ -122,7 +123,7 @@ mod test {
     #[case(vec ! ["- [D] should be deleted"], vec ! [])]
     #[case(vec ! ["   - [ ] bla bub ()"], vec ! ["-%13% [ ] bla bub ()"])]
     #[case(vec ! ["xxx  - [x] completed task test"], vec ! ["xxx  - [x] completed task test"])]
-    fn test_handle_it(dal: Dal, #[case] lines: Vec<&str>, #[case] expected: Vec<&str>) {
+    fn test_handle_it(_dal: Dal, #[case] lines: Vec<&str>, #[case] expected: Vec<&str>) {
         debug!("({}:{}) {:?}, {:?}", function_name!(), line!(), lines, expected);
         let lines: Vec<String> = lines.into_iter().map(String::from).collect();
         let expected: Vec<String> = expected.into_iter().map(String::from).collect();

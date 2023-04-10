@@ -261,7 +261,7 @@ mod test {
     #[rstest]
     #[case("- [ ] todo yyy  ", "testpath")]
     fn test_create_todo(mut dal: Dal, #[case] line: &str, #[case] path: &str) {
-        let mut l = Line::new(line.to_string(), "testpath".to_string());
+        let l = Line::new(line.to_string(), path.to_string());
         debug!("({}:{}) {:?}", function_name!(), line!(), l);
         l.create_todo().unwrap();
 
@@ -274,7 +274,7 @@ mod test {
     #[case("-%999% [ ] this is a text for deletion", None)]
     #[case("-%1% [x] todo 1", Some("-%1% [x] todo 1".to_string()))]
     #[case("- [x] this is a text describing a task {t:py,todo}", Some("-%13% [x] this is a text describing a task {t:py,todo}".to_string()))]
-    fn test_handle(mut dal: Dal, #[case] todo_text: &str, #[case] result: Option<String>) {
+    fn test_handle(mut _dal: Dal, #[case] todo_text: &str, #[case] result: Option<String>) {
         debug!("({}:{}) {:?} {:?}", function_name!(), line!(), todo_text, result);
         let mut l = Line::new(
             todo_text.to_string(),
@@ -285,7 +285,7 @@ mod test {
     }
 
     #[rstest]
-    fn test_handle_read(mut dal: Dal) {
+    fn test_handle_read(_dal: Dal) {
         let mut l = Line::new(
             "-%1% [x] this is a text describing a task {t:py,todo}".to_string(),
             "testpath".to_string(),
@@ -295,8 +295,8 @@ mod test {
     }
 
     #[rstest]
-    fn test_update_todo_in_db_not_found(mut dal: Dal) {
-        let mut l = Line::new(
+    fn test_update_todo_in_db_not_found(_dal: Dal) {
+        let l = Line::new(
             "-%999% [ ] bla blub ()".to_string(),
             "testpath".to_string(),
         );
@@ -305,7 +305,7 @@ mod test {
     }
 
     #[rstest]
-    fn test_update_vimtodo_from_db_not_found(mut dal: Dal) {
+    fn test_update_vimtodo_from_db_not_found(_dal: Dal) {
         let mut l = Line::new(
             "-%999% [ ] bla blub ()".to_string(),
             "testpath".to_string(),
